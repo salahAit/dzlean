@@ -219,8 +219,8 @@
 											e.preventDefault();
 											openDoc(doc, 'exam');
 										}}
-										class="relative flex flex-1 items-center justify-center gap-2 overflow-hidden rounded-lg bg-indigo-600 py-2.5 text-sm font-semibold text-white
-											shadow-md shadow-indigo-600/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-600/30"
+										class="relative flex flex-1 items-center justify-center gap-2 overflow-hidden rounded-lg bg-blue-600 py-2.5 text-sm font-semibold text-white
+											shadow-md shadow-blue-600/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/30"
 									>
 										<FileText size={16} /> الموضوع
 									</button>
@@ -302,8 +302,8 @@
 										e.preventDefault();
 										openDoc(doc, 'exam');
 									}}
-									class="relative flex flex-1 items-center justify-center gap-2 overflow-hidden rounded-lg bg-indigo-600 py-2.5 text-sm font-semibold text-white
-										shadow-md shadow-indigo-600/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-600/30"
+									class="relative flex flex-1 items-center justify-center gap-2 overflow-hidden rounded-lg bg-blue-600 py-2.5 text-sm font-semibold text-white
+										shadow-md shadow-blue-600/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/30"
 								>
 									<FileText size={16} /> الموضوع
 								</button>
@@ -370,16 +370,16 @@
 							e.preventDefault();
 							printDoc(selectedDoc.pdf_url);
 						}}
-						class="flex h-9 w-9 items-center justify-center rounded-lg border border-indigo-500/30 bg-indigo-500/10 text-indigo-400 transition-all hover:bg-indigo-500 hover:text-white"
+						class="flex h-9 w-9 items-center justify-center rounded-lg border border-blue-500/30 bg-blue-500/10 text-blue-500 transition-all hover:bg-blue-500 hover:text-white"
 						title="طباعة الموضوع"
 					>
-						<Printer size={18} />
+						<Printer size={22} />
 					</button>
 					<a
 						href={selectedDoc.pdf_url}
 						download
 						target="_blank"
-						class="flex h-9 items-center justify-center rounded-lg bg-indigo-600 px-3 text-sm font-semibold text-white shadow-md shadow-indigo-600/20 transition-all hover:bg-indigo-700 hover:shadow-lg"
+						class="flex h-9 items-center justify-center rounded-lg bg-blue-600 px-3 text-sm font-semibold text-white shadow-md shadow-blue-600/20 transition-all hover:bg-blue-700 hover:shadow-lg"
 						title="تحميل الموضوع"
 						><Download size={16} /> <span class="hidden sm:mr-1 sm:inline">تحميل</span></a
 					>
@@ -393,7 +393,7 @@
 						class="flex h-9 w-9 items-center justify-center rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 transition-all hover:bg-emerald-500 hover:text-white"
 						title="طباعة التصحيح"
 					>
-						<Printer size={18} />
+						<Printer size={22} />
 					</button>
 					<a
 						href={selectedDoc.solution_url}
@@ -407,7 +407,7 @@
 
 				<button
 					onclick={closeDoc}
-					class="text-destructive hover:bg-destructive hover:text-destructive-foreground border-destructive/20 bg-destructive/10 flex h-9 w-9 items-center justify-center rounded-lg border transition-colors"
+					class="flex h-9 w-9 items-center justify-center rounded-lg bg-red-500 text-white shadow-md shadow-red-500/20 transition-all hover:bg-red-600 hover:shadow-lg"
 					title="إغلاق"
 				>
 					<X size={20} />
@@ -445,7 +445,7 @@
 				<button
 					onclick={() => openDoc(selectedDoc, 'exam')}
 					class="rounded-full px-4 py-2 text-sm font-bold transition-all {activeTab === 'exam'
-						? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
+						? 'bg-blue-600 text-white shadow-md shadow-blue-600/20'
 						: 'text-white/70 hover:bg-white/10 hover:text-white'}"
 				>
 					الموضوع
