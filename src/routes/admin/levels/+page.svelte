@@ -65,6 +65,13 @@
 						<td class="text-primary px-6 py-4 whitespace-nowrap" dir="ltr">{level.slug}</td>
 						<td class="px-6 py-4 text-xl whitespace-nowrap">{level.icon || '-'}</td>
 						<td class="flex justify-center gap-3 px-6 py-4 whitespace-nowrap">
+							<button
+								onclick={() => alert('ميزة التعديل قيد التطوير')}
+								class="text-blue-400 transition-colors hover:text-blue-300"
+								title="تعديل"
+							>
+								<Edit size={18} />
+							</button>
 							<form
 								action="?/delete"
 								method="POST"

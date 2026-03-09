@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Plus, Trash2, Edit, FileText, CheckCircle, ExternalLink, X } from 'lucide-svelte';
+	import { Plus, Trash2, Edit, FileText, CheckCircle, ExternalLink, X, Eye } from 'lucide-svelte';
 	import type { ActionData } from './$types';
 
 	let { data, form } = $props<{ data: any; form: ActionData }>();
@@ -110,6 +110,23 @@
 							</div>
 						</td>
 						<td class="flex justify-center gap-3 px-6 py-4 whitespace-nowrap">
+							<button
+								onclick={() => alert('ميزة التعديل قيد التطوير')}
+								class="text-blue-400 transition-colors hover:text-blue-300"
+								title="تعديل"
+							>
+								<Edit size={18} />
+							</button>
+							{#if doc.slug}
+								<a
+									href={`/doc/${doc.slug}`}
+									target="_blank"
+									class="text-emerald-400 transition-colors hover:text-emerald-300"
+									title="معاينة بالموقع"
+								>
+									<Eye size={18} />
+								</a>
+							{/if}
 							<form
 								action="?/delete"
 								method="POST"
