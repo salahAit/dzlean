@@ -1,10 +1,35 @@
 <script lang="ts">
 	import { Plus, Trash2, Edit, X } from 'lucide-svelte';
+	import ConfirmModal from '$lib/components/ConfirmModal.svelte';
 	import type { ActionData } from './$types';
 
 	let { data, form } = $props<{ data: any; form: ActionData }>();
 
 	let isCreateModalOpen = $state(false);
+
+	let isEditModalOpen = $state(false);
+	let editingItem: any = $state(null);
+
+	let isDeleteModalOpen = $state(false);
+	let deletingId = $state<string | null>(null);
+	let deleteFormElement: HTMLFormElement;
+
+	function openEdit(item: any) {
+		editingItem = { ...item };
+		isEditModalOpen = true;
+	}
+
+	function confirmDelete(id: string, formEl: HTMLFormElement) {
+		deletingId = id;
+		deleteFormElement = formEl;
+		isDeleteModalOpen = true;
+	}
+
+	function performDelete() {
+		if (deleteFormElement) {
+			deleteFormElement.submit();
+		}
+	}
 </script>
 
 <svelte:head>
@@ -64,9 +89,11 @@
 						<td class="px-6 py-4 whitespace-nowrap" dir="ltr">{subject.nameFr}</td>
 						<td class="text-primary px-6 py-4 whitespace-nowrap" dir="ltr">{subject.slug}</td>
 						<td class="px-6 py-4 text-xl whitespace-nowrap">{subject.icon || '-'}</td>
-						<td class="flex justify-center gap-3 px-6 py-4 whitespace-nowrap">
+						<td class="flex justify-center gap-3 px-6 py-4 whitespace-nowrap"> </td><td
+							class="flex justify-center gap-3 px-6 py-4 whitespace-nowrap"
+						>
 							<button
-								onclick={() => alert('ميزة التعديل قيد التطوير')}
+								onclick={() => openEdit(subject)}
 								class="text-blue-400 transition-colors hover:text-blue-300"
 								title="تعديل"
 							>
@@ -75,7 +102,10 @@
 							<form
 								action="?/delete"
 								method="POST"
-								onsubmit={() => confirm('هل أنت متأكد من الحذف؟')}
+								onsubmit={(e) => {
+									e.preventDefault();
+									confirmDelete(subject.id, e.currentTarget);
+								}}
 							>
 								<input type="hidden" name="id" value={subject.id} />
 								<button
@@ -231,3 +261,144 @@
 		</div>
 	</div>
 {/if}
+
+<!-- Edit Modal -->
+{#if isEditModalOpen && editingItem}
+	<!-- svelte-ignore a11y_click_events_have_key_events -->
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
+	<div
+		class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
+		onclick={(e) => {
+			if (e.target === e.currentTarget) isEditModalOpen = false;
+		}}
+	>
+		<div
+			class="glass-card max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-white/10 p-6 shadow-2xl"
+		>
+			<div class="mb-6 flex items-center justify-between">
+				<h2 class="text-xl font-bold text-blue-400">تعديل مادة دراسية</h2>
+				<button class="text-white/50 hover:text-white" onclick={() => (isEditModalOpen = false)}>
+					<X size={20} />
+				</button>
+			</div>
+
+			<form action="?/update" method="POST" class="space-y-4">
+				<input type="hidden" name="originalId" value={editingItem.id} />
+				<div>
+					<label for="edit_id" class="mb-1 block text-sm font-medium">المعرف (ID - إنجليزي)</label>
+					<input
+						type="text"
+						id="edit_id"
+						name="id"
+						required
+						dir="ltr"
+						bind:value={editingItem.id}
+						class="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+					/>
+				</div>
+
+				<div>
+					<label for="edit_name" class="mb-1 block text-sm font-medium">الاسم الكامل</label>
+					<input
+						type="text"
+						id="edit_name"
+						name="name"
+						required
+						bind:value={editingItem.name}
+						class="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+					/>
+				</div>
+
+				<div class="grid grid-cols-2 gap-4">
+					<div>
+						<label for="edit_nameAr" class="mb-1 block text-sm font-medium">الاسم (عربي قصير)</label
+						>
+						<input
+							type="text"
+							id="edit_nameAr"
+							name="nameAr"
+							required
+							bind:value={editingItem.nameAr}
+							class="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+						/>
+					</div>
+					<div>
+						<label for="edit_nameFr" class="mb-1 block text-sm font-medium">الاسم (فرنسي)</label>
+						<input
+							type="text"
+							id="edit_nameFr"
+							name="nameFr"
+							required
+							dir="ltr"
+							bind:value={editingItem.nameFr}
+							class="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+						/>
+					</div>
+				</div>
+
+				<div>
+					<label for="edit_slug" class="mb-1 block text-sm font-medium">الرابط (Slug)</label>
+					<input
+						type="text"
+						id="edit_slug"
+						name="slug"
+						required
+						dir="ltr"
+						bind:value={editingItem.slug}
+						class="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-blue-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+					/>
+				</div>
+
+				<div class="grid grid-cols-2 gap-4">
+					<div>
+						<label for="edit_icon" class="mb-1 block text-sm font-medium">الأيقونة (Lucide)</label>
+						<input
+							type="text"
+							id="edit_icon"
+							name="icon"
+							dir="ltr"
+							bind:value={editingItem.icon}
+							class="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+							placeholder="مثال: BookOpen"
+						/>
+					</div>
+					<div>
+						<label for="edit_color" class="mb-1 block text-sm font-medium">اللون (CSS Class)</label>
+						<input
+							type="text"
+							id="edit_color"
+							name="color"
+							dir="ltr"
+							bind:value={editingItem.color}
+							class="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+							placeholder="مثال: text-blue-500"
+						/>
+					</div>
+				</div>
+
+				<div class="mt-8 flex gap-3">
+					<button
+						type="button"
+						onclick={() => (isEditModalOpen = false)}
+						class="flex-1 rounded-xl border border-white/10 bg-white/5 py-2.5 font-bold transition-colors hover:bg-white/10"
+					>
+						إلغاء
+					</button>
+					<button
+						type="submit"
+						class="flex-1 rounded-xl bg-blue-500 py-2.5 font-bold text-white shadow-lg transition-all hover:scale-[1.02] hover:bg-blue-600"
+					>
+						حفظ التعديلات
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+{/if}
+
+<ConfirmModal
+	bind:isOpen={isDeleteModalOpen}
+	onConfirm={performDelete}
+	title="تأكيد الحذف"
+	message="هل أنت متأكد من رغبتك في حذف هذه المادة الدراسية؟ سيؤدي ذلك لنتائج غير متوقعة في حال وجود دروس أو وثائق مرتبطة بها."
+/>

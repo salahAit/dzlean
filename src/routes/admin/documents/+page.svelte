@@ -1,10 +1,18 @@
 <script lang="ts">
 	import { Plus, Trash2, Edit, FileText, CheckCircle, ExternalLink, X, Eye } from 'lucide-svelte';
+	import ConfirmModal from '$lib/components/ConfirmModal.svelte';
 	import type { ActionData } from './$types';
 
 	let { data, form } = $props<{ data: any; form: ActionData }>();
 
 	let isCreateModalOpen = $state(false);
+
+	let isEditModalOpen = $state(false);
+	let editingItem: any = $state(null);
+
+	let isDeleteModalOpen = $state(false);
+	let deletingId = $state<number | null>(null);
+	let deleteFormElement: HTMLFormElement;
 
 	const typeLabels: Record<string, string> = {
 		exam: 'اختبار',
@@ -18,6 +26,23 @@
 	function getYearSubjectLabel(id: number) {
 		const ys = data.yearSubjects.find((y: any) => y.id === id);
 		return ys ? `${ys.yearAr} - ${ys.subjectAr}` : 'غير معروف';
+	}
+
+	function openEdit(item: any) {
+		editingItem = { ...item };
+		isEditModalOpen = true;
+	}
+
+	function confirmDelete(id: number, formEl: HTMLFormElement) {
+		deletingId = id;
+		deleteFormElement = formEl;
+		isDeleteModalOpen = true;
+	}
+
+	function performDelete() {
+		if (deleteFormElement) {
+			deleteFormElement.submit();
+		}
 	}
 </script>
 
@@ -70,6 +95,7 @@
 			</thead>
 			<tbody class="divide-y divide-white/10">
 				{#each data.documents as doc}
+					{@const itemData = data.yearSubjects.find((y: any) => y.id === doc.yearSubjectId)}
 					<tr class="transition-colors hover:bg-white/5">
 						<td class="px-6 py-4 font-medium whitespace-nowrap text-white/70" dir="ltr">{doc.id}</td
 						>
@@ -111,15 +137,15 @@
 						</td>
 						<td class="flex justify-center gap-3 px-6 py-4 whitespace-nowrap">
 							<button
-								onclick={() => alert('ميزة التعديل قيد التطوير')}
+								onclick={() => openEdit(doc)}
 								class="text-blue-400 transition-colors hover:text-blue-300"
 								title="تعديل"
 							>
 								<Edit size={18} />
 							</button>
-							{#if doc.slug}
+							{#if doc.slug && itemData}
 								<a
-									href={`/doc/${doc.slug}`}
+									href={`/${itemData.levelSlug}/${itemData.yearSlug}/${itemData.subjectSlug}/${doc.slug}`}
 									target="_blank"
 									class="text-emerald-400 transition-colors hover:text-emerald-300"
 									title="معاينة بالموقع"
@@ -130,7 +156,10 @@
 							<form
 								action="?/delete"
 								method="POST"
-								onsubmit={() => confirm('هل أنت متأكد من الحذف؟')}
+								onsubmit={(e) => {
+									e.preventDefault();
+									confirmDelete(doc.id, e.currentTarget);
+								}}
 							>
 								<input type="hidden" name="id" value={doc.id} />
 								<button
@@ -325,3 +354,189 @@
 		</div>
 	</div>
 {/if}
+
+<!-- Edit Modal -->
+{#if isEditModalOpen && editingItem}
+	<div
+		class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
+		onclick={(e) => {
+			if (e.target === e.currentTarget) isEditModalOpen = false;
+		}}
+		onkeydown={(e) => {
+			if (e.key === 'Escape') isEditModalOpen = false;
+		}}
+		role="button"
+		tabindex="0"
+	>
+		<div
+			class="glass-card relative max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-emerald-500/20 p-6 shadow-2xl"
+		>
+			<div class="mb-6 flex items-center justify-between">
+				<h2 class="text-xl font-bold text-emerald-400">تعديل وثيقة</h2>
+				<button class="text-white/50 hover:text-white" onclick={() => (isEditModalOpen = false)}>
+					<X size={20} />
+				</button>
+			</div>
+
+			<form action="?/update" method="POST" class="space-y-4">
+				<input type="hidden" name="id" value={editingItem.id} />
+
+				<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+					<div>
+						<label for="edit_title" class="mb-1 block text-sm font-medium">العنوان كامل</label>
+						<input
+							type="text"
+							id="edit_title"
+							name="title"
+							required
+							bind:value={editingItem.title}
+							class="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
+							placeholder="اختبار الثلاثي الأول في الرياضيات"
+						/>
+					</div>
+					<div>
+						<label for="edit_slug" class="mb-1 block text-sm font-medium">الرابط (Slug)</label>
+						<input
+							type="text"
+							id="edit_slug"
+							name="slug"
+							required
+							dir="ltr"
+							bind:value={editingItem.slug}
+							class="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-emerald-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
+						/>
+					</div>
+					<div>
+						<label for="edit_type" class="mb-1 block text-sm font-medium">نوع الوثيقة</label>
+						<select
+							id="edit_type"
+							name="type"
+							required
+							bind:value={editingItem.type}
+							class="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none [&>option]:bg-[#0a0f1c]"
+						>
+							{#each Object.entries(typeLabels) as [key, label]}
+								<option value={key}>{label}</option>
+							{/each}
+						</select>
+					</div>
+				</div>
+
+				<div class="grid flex-col gap-4 sm:grid-cols-2">
+					<div>
+						<label for="edit_yearSubjectId" class="mb-1 block text-sm font-medium"
+							>السنة الدراسية والمادة</label
+						>
+						<select
+							id="edit_yearSubjectId"
+							name="yearSubjectId"
+							required
+							bind:value={editingItem.yearSubjectId}
+							class="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none [&>option]:bg-[#0a0f1c]"
+						>
+							{#each data.yearSubjects as ys}
+								<option value={ys.id}>{ys.yearAr} - {ys.subjectAr}</option>
+							{/each}
+						</select>
+					</div>
+					<div>
+						<label for="edit_trimesterId" class="mb-1 block text-sm font-medium"
+							>الفصل (اختياري)</label
+						>
+						<select
+							id="edit_trimesterId"
+							name="trimesterId"
+							bind:value={editingItem.trimesterId}
+							class="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none [&>option]:bg-[#0a0f1c]"
+						>
+							<option value="">-- بدون فصل (درس عام) --</option>
+							{#each data.trimesters as t}
+								<option value={t.id}>{t.nameAr}</option>
+							{/each}
+						</select>
+					</div>
+				</div>
+
+				<div class="mt-4 grid grid-cols-1 gap-4 border-t border-white/10 pt-4 sm:grid-cols-2">
+					<div>
+						<label for="edit_pdfUrl" class="mb-1 block text-sm font-medium"
+							>رابط ملف الموضوع (PDF)</label
+						>
+						<input
+							type="url"
+							id="edit_pdfUrl"
+							name="pdfUrl"
+							dir="ltr"
+							bind:value={editingItem.pdfUrl}
+							class="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
+						/>
+					</div>
+					<div>
+						<label for="edit_solutionUrl" class="mb-1 block text-sm font-medium"
+							>رابط ملف الحل (PDF - اختياري)</label
+						>
+						<input
+							type="url"
+							id="edit_solutionUrl"
+							name="solutionUrl"
+							dir="ltr"
+							bind:value={editingItem.solutionUrl}
+							class="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
+						/>
+					</div>
+				</div>
+
+				<div class="grid grid-cols-2 gap-4">
+					<div>
+						<label for="edit_academicYear" class="mb-1 block text-sm font-medium"
+							>السنة الأكاديمية (اختياري)</label
+						>
+						<input
+							type="text"
+							id="edit_academicYear"
+							name="academicYear"
+							dir="ltr"
+							bind:value={editingItem.year}
+							class="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
+						/>
+					</div>
+					<div>
+						<label for="edit_source" class="mb-1 block text-sm font-medium"
+							>المصدر/المؤسسة (اختياري)</label
+						>
+						<input
+							type="text"
+							id="edit_source"
+							name="source"
+							bind:value={editingItem.source}
+							class="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
+						/>
+					</div>
+				</div>
+
+				<div class="mt-8 flex gap-3">
+					<button
+						type="button"
+						onclick={() => (isEditModalOpen = false)}
+						class="flex-1 rounded-xl border border-white/10 bg-white/5 py-2.5 font-bold transition-colors hover:bg-white/10"
+					>
+						إلغاء
+					</button>
+					<button
+						type="submit"
+						class="flex-1 rounded-xl bg-emerald-500 py-2.5 font-bold text-white shadow-lg transition-all hover:scale-[1.02] hover:bg-emerald-600"
+					>
+						حفظ التعديلات
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+{/if}
+
+<ConfirmModal
+	bind:isOpen={isDeleteModalOpen}
+	onConfirm={performDelete}
+	title="تأكيد الحذف"
+	message="هل أنت متأكد من رغبتك في حذف هذه الوثيقة؟ لا يمكن استرجاع الوثيقة بعد الحذف."
+/>

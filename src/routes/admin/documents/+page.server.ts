@@ -7,15 +7,19 @@ export const load: PageServerLoad = async () => {
     const documents = await contentDatabase.select().from(contentSchema.documents).orderBy(contentSchema.documents.id);
     const trimesters = await contentDatabase.select().from(contentSchema.trimesters).all();
 
-    // Complex join to get readable Year-Subject names
+    // Complex join to get readable Year-Subject names and slugs for Preview URLs
     const yearSubjectsQuery = await contentDatabase
         .select({
             id: contentSchema.yearSubjects.id,
             yearAr: contentSchema.years.nameAr,
-            subjectAr: contentSchema.subjects.nameAr
+            subjectAr: contentSchema.subjects.nameAr,
+            yearSlug: contentSchema.years.slug,
+            subjectSlug: contentSchema.subjects.slug,
+            levelSlug: contentSchema.educationLevels.slug
         })
         .from(contentSchema.yearSubjects)
         .innerJoin(contentSchema.years, eq(contentSchema.yearSubjects.yearId, contentSchema.years.id))
+        .innerJoin(contentSchema.educationLevels, eq(contentSchema.years.levelId, contentSchema.educationLevels.id))
         .innerJoin(contentSchema.subjects, eq(contentSchema.yearSubjects.subjectId, contentSchema.subjects.id))
         .all();
 
@@ -58,6 +62,45 @@ export const actions: Actions = {
             return { success: true };
         } catch (err) {
             return fail(500, { error: true, message: 'حدث خطأ أثناء إضافة الوثيقة' });
+        }
+    },
+    update: async ({ request }) => {
+        const formData = await request.formData();
+        const id = parseInt(formData.get('id') as string);
+        const title = formData.get('title') as string;
+        const slug = formData.get('slug') as string;
+        const yearSubjectId = parseInt(formData.get('yearSubjectId') as string);
+        const type = formData.get('type') as any;
+
+        const trimesterId = formData.get('trimesterId') as string || null;
+        const pdfUrl = formData.get('pdfUrl') as string || null;
+        const solutionUrl = formData.get('solutionUrl') as string || null;
+        const academicYear = formData.get('academicYear') as string || null;
+        const source = formData.get('source') as string || null;
+
+        if (!id || !title || !slug || !yearSubjectId || !type) {
+            return fail(400, { error: true, message: 'يرجى تعبئة الحقول الأساسية' });
+        }
+
+        try {
+            await contentDatabase.update(contentSchema.documents)
+                .set({
+                    title,
+                    titleAr: title,
+                    slug,
+                    yearSubjectId,
+                    type,
+                    trimesterId,
+                    pdfUrl,
+                    solutionUrl,
+                    year: academicYear,
+                    source,
+                    hasSolution: !!solutionUrl,
+                })
+                .where(eq(contentSchema.documents.id, id));
+            return { success: true };
+        } catch (err) {
+            return fail(500, { error: true, message: 'حدث خطأ أثناء التعديل' });
         }
     },
     delete: async ({ request }) => {
