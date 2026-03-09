@@ -12,7 +12,7 @@
   #text(size: 20pt)[الرؤية، التقنيات، والمستقبل]
   
   #v(3cm)
-  #text(size: 14pt, fill: luma(100))[الإصدار الأول - 2026]
+  #text(size: 14pt, fill: luma(100))[(الإصدار المطور - 2026)]
 ]
 
 #pagebreak()
