@@ -12,6 +12,8 @@
 		Bookmark,
 		PenTool,
 		Inbox,
+		Filter,
+		SlidersHorizontal,
 		X
 	} from 'lucide-svelte';
 	import DynamicIcon from '$lib/components/DynamicIcon.svelte';
@@ -23,14 +25,57 @@
 	let activeTab = $state<'exam' | 'solution'>('exam');
 	let isFullscreen = $state(false);
 
-	let activeTrimesterTab = $state<string | 'general'>('general');
+	let activeTrimesterTab = $state<string>('t1');
+
+	// Auto-select the first tab with docs on initial load
+	$effect(() => {
+		if (data && activeTrimesterTab === 't1') {
+			const firstTrimester = data.trimesters?.[0];
+			if (firstTrimester) {
+				activeTrimesterTab = firstTrimester.id;
+			}
+		}
+	});
+
+	// Filter state
+	let filterType = $state('all');
+	let filterSource = $state('all');
+	let filterYear = $state('all');
+	let filterHasSolution = $state(false);
+
+	// Reactive filtered documents
+	let filteredDocs = $derived.by(() => {
+		// Include docs for the active trimester + null-trimester docs (lessons/summaries)
+		let docs = data.documents.filter(
+			(d: any) => d.trimester_id === activeTrimesterTab || d.trimester_id === null
+		);
+
+		if (filterType !== 'all') {
+			if (filterType === 'lesson_summary') {
+				docs = docs.filter((d: any) => d.type === 'lesson' || d.type === 'summary');
+			} else {
+				docs = docs.filter((d: any) => d.type === filterType);
+			}
+		}
+
+		if (filterSource !== 'all') {
+			docs = docs.filter((d: any) => d.source === filterSource);
+		}
+
+		if (filterYear !== 'all') {
+			docs = docs.filter((d: any) => d.academic_year === filterYear);
+		}
+
+		if (filterHasSolution) {
+			docs = docs.filter((d: any) => d.has_solution);
+		}
+
+		return docs;
+	});
 
 	$effect(() => {
 		if (data) {
-			const hasCurrentTabDocs =
-				activeTrimesterTab === 'general'
-					? getGeneralDocs().length > 0
-					: getDocsByTrimester(activeTrimesterTab).length > 0;
+			const hasCurrentTabDocs = getDocsByTrimester(activeTrimesterTab).length > 0;
 
 			if (!hasCurrentTabDocs) {
 				const firstTrimWithDocs = data.trimesters.find(
@@ -38,8 +83,6 @@
 				);
 				if (firstTrimWithDocs) {
 					activeTrimesterTab = firstTrimWithDocs.id;
-				} else if (getGeneralDocs().length > 0) {
-					activeTrimesterTab = 'general';
 				}
 			}
 		}
@@ -98,14 +141,9 @@
 		solution: 'حل'
 	};
 
-	// Group documents by trimester
+	// Group documents by trimester (includes null-trimester docs like lessons/summaries)
 	function getDocsByTrimester(trimId: string | null) {
-		return data.documents.filter((d: any) => d.trimester_id === trimId);
-	}
-
-	// Get documents without trimester (summaries, general lessons)
-	function getGeneralDocs() {
-		return data.documents.filter((d: any) => !d.trimester_id);
+		return data.documents.filter((d: any) => d.trimester_id === trimId || d.trimester_id === null);
 	}
 </script>
 
@@ -183,55 +221,102 @@
 		{:else}
 			<!-- Tabs Navigation -->
 			<div
-				class="mb-6 flex gap-2 overflow-x-auto border-b border-white/10 pb-4 [-ms-overflow-style:none] [scrollbar-width:none] sm:mb-8 sm:flex-wrap [&::-webkit-scrollbar]:hidden"
+				class="mb-4 flex justify-center gap-2 overflow-x-auto border-b border-white/10 pb-4 [-ms-overflow-style:none] [scrollbar-width:none] sm:mb-6 sm:flex-wrap [&::-webkit-scrollbar]:hidden"
 			>
 				{#each data.trimesters as trimester}
 					{@const docsCount = getDocsByTrimester(trimester.id).length}
-					{#if docsCount > 0}
-						<button
-							onclick={() => (activeTrimesterTab = trimester.id)}
-							class="flex shrink-0 items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-bold transition-all {activeTrimesterTab ===
-							trimester.id
-								? 'bg-primary text-primary-foreground shadow-primary/20 shadow-md'
-								: 'text-muted-foreground hover:bg-white/5 hover:text-white'}"
-						>
-							{trimester.name_ar}
-							<span
-								class="flex h-5 items-center justify-center rounded-full bg-black/20 px-2 text-[10px]"
-								>{docsCount}</span
-							>
-						</button>
-					{/if}
-				{/each}
-
-				{#if getGeneralDocs().length > 0}
 					<button
-						onclick={() => (activeTrimesterTab = 'general')}
+						onclick={() => (activeTrimesterTab = trimester.id)}
 						class="flex shrink-0 items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-bold transition-all {activeTrimesterTab ===
-						'general'
-							? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20'
+						trimester.id
+							? 'bg-primary text-primary-foreground shadow-primary/20 shadow-md'
 							: 'text-muted-foreground hover:bg-white/5 hover:text-white'}"
 					>
-						دروس وملخصات
+						{trimester.name_ar}
 						<span
 							class="flex h-5 items-center justify-center rounded-full bg-black/20 px-2 text-[10px]"
-							>{getGeneralDocs().length}</span
+							>{docsCount}</span
 						>
 					</button>
-				{/if}
+				{/each}
+			</div>
+
+			<!-- Filter Bar -->
+			<div
+				class="mb-6 flex flex-col gap-3 rounded-xl border border-white/10 bg-white/3 p-4 sm:mb-8 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4"
+			>
+				<div class="text-muted-foreground mb-1 flex items-center gap-2 sm:mb-0">
+					<SlidersHorizontal size={18} class="opacity-70" />
+					<span class="text-sm font-semibold">فلترة:</span>
+				</div>
+
+				<!-- Type Filter -->
+				<select
+					bind:value={filterType}
+					class="focus:border-primary/50 focus:ring-primary/30 w-full rounded-lg border border-white/10 bg-[#1a1a2e] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#22223a] focus:ring-1 focus:outline-none sm:w-auto"
+				>
+					<option value="all" class="bg-[#1a1a2e] text-white">النوع: الكل</option>
+					<option value="test" class="bg-[#1a1a2e] text-white">فرض</option>
+					<option value="exam" class="bg-[#1a1a2e] text-white">اختبار</option>
+					<option value="lesson_summary" class="bg-[#1a1a2e] text-white">درس / ملخص</option>
+				</select>
+
+				<!-- Source Filter -->
+				<select
+					bind:value={filterSource}
+					class="focus:border-primary/50 focus:ring-primary/30 w-full rounded-lg border border-white/10 bg-[#1a1a2e] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#22223a] focus:ring-1 focus:outline-none sm:w-auto"
+				>
+					<option value="all" class="bg-[#1a1a2e] text-white">المصدر: الكل</option>
+					<option value="رسمي" class="bg-[#1a1a2e] text-white">رسمي</option>
+					<option value="مقترح" class="bg-[#1a1a2e] text-white">مقترح</option>
+				</select>
+
+				<!-- Year Filter -->
+				<select
+					bind:value={filterYear}
+					class="focus:border-primary/50 focus:ring-primary/30 w-full rounded-lg border border-white/10 bg-[#1a1a2e] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#22223a] focus:ring-1 focus:outline-none sm:w-auto"
+				>
+					<option value="all" class="bg-[#1a1a2e] text-white">السنة: الكل</option>
+					<option value="2024" class="bg-[#1a1a2e] text-white">2024</option>
+					<option value="2023" class="bg-[#1a1a2e] text-white">2023</option>
+					<option value="2022" class="bg-[#1a1a2e] text-white">2022</option>
+				</select>
+
+				<!-- Has Solution Toggle -->
+				<label
+					class="mt-2 flex w-full cursor-pointer items-center justify-between gap-2 border-t border-white/5 pt-3 sm:mt-0 sm:mr-auto sm:w-auto sm:border-0 sm:pt-0"
+				>
+					<span class="text-muted-foreground text-sm font-medium">مع التصحيح فقط</span>
+					<button
+						type="button"
+						role="switch"
+						aria-checked={filterHasSolution}
+						aria-label="فلترة الوثائق مع التصحيح"
+						onclick={() => (filterHasSolution = !filterHasSolution)}
+						class="focus:ring-primary/50 focus:ring-offset-background relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200 focus:ring-2 focus:ring-offset-2 focus:outline-none {filterHasSolution
+							? 'bg-emerald-500'
+							: 'bg-white/10'}"
+					>
+						<span
+							class="pointer-events-none inline-block h-4 w-4 rounded-full bg-white shadow-lg ring-0 transition-transform duration-200 {filterHasSolution
+								? '-translate-x-5'
+								: '-translate-x-1'}"
+						></span>
+					</button>
+				</label>
 			</div>
 
 			<!-- Active Tab Content -->
 			<div class="flex flex-col gap-3">
-				{#if activeTrimesterTab === 'general'}
-					{#each getGeneralDocs() as doc}
-						{@render docRow(doc, '#10b981')}
-					{/each}
+				{#each filteredDocs as doc}
+					{@render docRow(doc, data.subject.color)}
 				{:else}
-					{#each getDocsByTrimester(activeTrimesterTab) as doc}
-						{@render docRow(doc, data.subject.color)}
-					{/each}
-				{/if}
+					<div class="text-muted-foreground flex flex-col items-center py-16 text-center">
+						<Filter size={48} class="mb-4 opacity-40" />
+						<h3 class="mb-2 text-lg font-bold">لا توجد نتائج</h3>
+						<p class="text-sm">لا توجد وثائق مطابقة للفلاتر المحددة في هذا الفصل</p>
+					</div>
+				{/each}
 			</div>
 		{/if}
 	</div>
@@ -290,16 +375,16 @@
 		</div>
 
 		<div
-			class="mx-auto flex w-full shrink-0 items-center gap-2 border-t border-white/5 pt-3 sm:ms-4 sm:w-auto sm:border-t-0 sm:pt-0"
+			class="mx-auto flex w-full shrink-0 items-center justify-center gap-1.5 border-t border-white/5 pt-3 sm:ms-4 sm:w-auto sm:border-t-0 sm:pt-0"
 		>
 			<button
 				onclick={(e) => {
 					e.preventDefault();
 					openDoc(doc, 'exam');
 				}}
-				class="relative flex flex-1 items-center justify-center gap-1.5 overflow-hidden rounded-lg bg-blue-600 px-3 py-2 text-xs font-semibold text-white shadow-md shadow-blue-600/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/30 sm:flex-none sm:px-4 sm:py-2 sm:text-sm"
+				class="relative flex flex-1 items-center justify-center gap-1 overflow-hidden rounded-lg bg-blue-600 py-2 text-[11px] font-semibold text-white shadow-md shadow-blue-600/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/30 sm:flex-none sm:px-4 sm:py-2 sm:text-sm"
 			>
-				<FileText size={16} /> الموضوع
+				<FileText size={14} class="sm:h-4 sm:w-4" /> الموضوع
 			</button>
 
 			{#if doc.has_solution}
@@ -308,9 +393,9 @@
 						e.preventDefault();
 						openDoc(doc, 'solution');
 					}}
-					class="relative flex flex-1 items-center justify-center gap-1.5 overflow-hidden rounded-lg bg-emerald-500 px-3 py-2 text-xs font-semibold text-white shadow-md shadow-emerald-500/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-emerald-600 hover:shadow-lg hover:shadow-emerald-500/30 sm:flex-none sm:px-4 sm:py-2 sm:text-sm"
+					class="relative flex flex-1 items-center justify-center gap-1 overflow-hidden rounded-lg bg-emerald-500 py-2 text-[11px] font-semibold text-white shadow-md shadow-emerald-500/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-emerald-600 hover:shadow-lg hover:shadow-emerald-500/30 sm:flex-none sm:px-4 sm:py-2 sm:text-sm"
 				>
-					<CheckCircle size={16} /> الحل
+					<CheckCircle size={14} class="sm:h-4 sm:w-4" /> الحل
 				</button>
 			{/if}
 		</div>
