@@ -183,7 +183,7 @@
 			</div>
 			<div class="text-center sm:text-right">
 				<h1 class="text-3xl font-extrabold lg:text-4xl">{data.subject.name_ar}</h1>
-				<p class="text-muted-foreground">{data.year.name_ar} • {data.subject.name_fr}</p>
+				<p class="text-muted-foreground">{data.year.name_ar}</p>
 			</div>
 		</div>
 
@@ -220,30 +220,27 @@
 			</div>
 		{:else}
 			<!-- Tabs Navigation -->
-			<div
-				class="mb-4 flex justify-center gap-2 overflow-x-auto border-b border-white/10 pb-4 [-ms-overflow-style:none] [scrollbar-width:none] sm:mb-6 sm:flex-wrap [&::-webkit-scrollbar]:hidden"
-			>
-				{#each data.trimesters as trimester}
-					{@const docsCount = getDocsByTrimester(trimester.id).length}
-					<button
-						onclick={() => (activeTrimesterTab = trimester.id)}
-						class="flex shrink-0 items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-bold transition-all {activeTrimesterTab ===
-						trimester.id
-							? 'bg-primary text-primary-foreground shadow-primary/20 shadow-md'
-							: 'text-muted-foreground hover:bg-white/5 hover:text-white'}"
-					>
-						{trimester.name_ar}
-						<span
-							class="flex h-5 items-center justify-center rounded-full bg-black/20 px-2 text-[10px]"
-							>{docsCount}</span
+			<div class="mb-6 flex w-full justify-center overflow-x-auto">
+				<div
+					class="bg-muted text-muted-foreground inline-flex h-12 items-center justify-center rounded-lg p-1"
+				>
+					{#each data.trimesters as trimester}
+						<button
+							onclick={() => (activeTrimesterTab = trimester.id)}
+							class="ring-offset-background focus-visible:ring-ring inline-flex min-w-24 items-center justify-center rounded-md px-6 py-2 text-sm font-bold whitespace-nowrap transition-all focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 {activeTrimesterTab ===
+							trimester.id
+								? 'bg-background text-foreground shadow-sm'
+								: 'hover:text-foreground'}"
 						>
-					</button>
-				{/each}
+							الفصل {trimester.id.replace('t', '')}
+						</button>
+					{/each}
+				</div>
 			</div>
 
 			<!-- Filter Bar -->
 			<div
-				class="mb-6 flex flex-col gap-3 rounded-xl border border-white/10 bg-white/3 p-4 sm:mb-8 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4"
+				class="bg-card text-card-foreground mb-6 flex flex-col gap-3 rounded-xl border p-4 shadow-sm sm:mb-8 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4"
 			>
 				<div class="text-muted-foreground mb-1 flex items-center gap-2 sm:mb-0">
 					<SlidersHorizontal size={18} class="opacity-70" />
@@ -253,38 +250,38 @@
 				<!-- Type Filter -->
 				<select
 					bind:value={filterType}
-					class="focus:border-primary/50 focus:ring-primary/30 w-full rounded-lg border border-white/10 bg-[#1a1a2e] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#22223a] focus:ring-1 focus:outline-none sm:w-auto"
+					class="bg-background text-foreground hover:bg-accent hover:text-accent-foreground focus:ring-ring w-full rounded-md border px-4 py-2 text-sm font-medium transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none sm:w-auto"
 				>
-					<option value="all" class="bg-[#1a1a2e] text-white">النوع: الكل</option>
-					<option value="test" class="bg-[#1a1a2e] text-white">فرض</option>
-					<option value="exam" class="bg-[#1a1a2e] text-white">اختبار</option>
-					<option value="lesson_summary" class="bg-[#1a1a2e] text-white">درس / ملخص</option>
+					<option value="all">النوع: الكل</option>
+					<option value="test">فرض</option>
+					<option value="exam">اختبار</option>
+					<option value="lesson_summary">درس / ملخص</option>
 				</select>
 
 				<!-- Source Filter -->
 				<select
 					bind:value={filterSource}
-					class="focus:border-primary/50 focus:ring-primary/30 w-full rounded-lg border border-white/10 bg-[#1a1a2e] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#22223a] focus:ring-1 focus:outline-none sm:w-auto"
+					class="bg-background text-foreground hover:bg-accent hover:text-accent-foreground focus:ring-ring w-full rounded-md border px-4 py-2 text-sm font-medium transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none sm:w-auto"
 				>
-					<option value="all" class="bg-[#1a1a2e] text-white">المصدر: الكل</option>
-					<option value="رسمي" class="bg-[#1a1a2e] text-white">رسمي</option>
-					<option value="مقترح" class="bg-[#1a1a2e] text-white">مقترح</option>
+					<option value="all">المصدر: الكل</option>
+					<option value="رسمي">رسمي</option>
+					<option value="مقترح">مقترح</option>
 				</select>
 
 				<!-- Year Filter -->
 				<select
 					bind:value={filterYear}
-					class="focus:border-primary/50 focus:ring-primary/30 w-full rounded-lg border border-white/10 bg-[#1a1a2e] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#22223a] focus:ring-1 focus:outline-none sm:w-auto"
+					class="bg-background text-foreground hover:bg-accent hover:text-accent-foreground focus:ring-ring w-full rounded-md border px-4 py-2 text-sm font-medium transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none sm:w-auto"
 				>
-					<option value="all" class="bg-[#1a1a2e] text-white">السنة: الكل</option>
-					<option value="2024" class="bg-[#1a1a2e] text-white">2024</option>
-					<option value="2023" class="bg-[#1a1a2e] text-white">2023</option>
-					<option value="2022" class="bg-[#1a1a2e] text-white">2022</option>
+					<option value="all">السنة: الكل</option>
+					<option value="2024">2024</option>
+					<option value="2023">2023</option>
+					<option value="2022">2022</option>
 				</select>
 
 				<!-- Has Solution Toggle -->
 				<label
-					class="mt-2 flex w-full cursor-pointer items-center justify-between gap-2 border-t border-white/5 pt-3 sm:mt-0 sm:mr-auto sm:w-auto sm:border-0 sm:pt-0"
+					class="mt-2 flex w-full cursor-pointer items-center justify-between gap-2 border-t pt-3 sm:mt-0 sm:mr-auto sm:w-auto sm:border-0 sm:pt-0"
 				>
 					<span class="text-muted-foreground text-sm font-medium">مع التصحيح فقط</span>
 					<button
@@ -293,14 +290,14 @@
 						aria-checked={filterHasSolution}
 						aria-label="فلترة الوثائق مع التصحيح"
 						onclick={() => (filterHasSolution = !filterHasSolution)}
-						class="focus:ring-primary/50 focus:ring-offset-background relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200 focus:ring-2 focus:ring-offset-2 focus:outline-none {filterHasSolution
+						class="focus:ring-ring focus:ring-offset-background relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200 focus:ring-2 focus:ring-offset-2 focus:outline-none {filterHasSolution
 							? 'bg-emerald-500'
-							: 'bg-white/10'}"
+							: 'bg-slate-300 dark:bg-white/10'}"
 					>
 						<span
 							class="pointer-events-none inline-block h-4 w-4 rounded-full bg-white shadow-lg ring-0 transition-transform duration-200 {filterHasSolution
-								? '-translate-x-5'
-								: '-translate-x-1'}"
+								? '-translate-x-4'
+								: 'translate-x-1'}"
 						></span>
 					</button>
 				</label>
