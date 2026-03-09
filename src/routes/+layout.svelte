@@ -19,7 +19,7 @@
 			<!-- Logo -->
 			<a href="/" class="flex items-center gap-3 text-xl font-bold" dir="ltr">
 				<BookOpen size={32} class="text-primary" />
-				<span class="gradient-text text-2xl">DzLearn</span>
+				<span class="gradient-text text-2xl">SujetStore</span>
 			</a>
 
 			<!-- Navigation Links -->
@@ -163,7 +163,7 @@
 			<div>
 				<div class="mb-4 flex items-center gap-3 text-xl font-bold">
 					<BookOpen size={32} class="text-primary" />
-					<span class="gradient-text text-2xl">DzLearn</span>
+					<span class="gradient-text text-2xl">SujetStore</span>
 				</div>
 				<p class="text-muted-foreground text-sm leading-relaxed">
 					بنك الفروض والاختبارات الجزائرية. دروس، ملخصات، فروض واختبارات لجميع المراحل التعليمية وفق
@@ -210,7 +210,7 @@
 		</div>
 
 		<div class="text-muted-foreground mt-8 border-t border-white/5 pt-8 text-center text-sm">
-			<p>© {new Date().getFullYear()} DzLearn - جميع الحقوق محفوظة</p>
+			<p>© {new Date().getFullYear()} SujetStore - جميع الحقوق محفوظة</p>
 		</div>
 	</div>
 </footer>

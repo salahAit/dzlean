@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # ============================================
-# 🚀 DzLearn SvelteKit Deployment Script
+# 🚀 SujetStore SvelteKit Deployment Script
 # ============================================
-# Deploys to: dzlearn.com (or your domain)
+# Deploys to: sujetstore.com (or your domain)
 # Server: Contabo VPS
 # ============================================
 
@@ -12,8 +12,8 @@ set -e
 # Configuration
 SERVER_IP="5.182.17.229"
 SERVER_USER="root"
-REMOTE_DIR="/var/www/dzlearn"
-DOMAIN="dzlearn.com"
+REMOTE_DIR="/var/www/sujetstore"
+DOMAIN="sujetstore.com"
 
 # Colors
 RED='\033[0;31m'
@@ -32,7 +32,7 @@ RSYNC_SSH="ssh -i ./ssh_key -o StrictHostKeyChecking=no"
 
 echo ""
 echo "============================================"
-echo "  📚 DzLearn Deployment to $DOMAIN"
+echo "  📚 SujetStore Deployment to $DOMAIN"
 echo "============================================"
 echo ""
 
@@ -122,15 +122,15 @@ configure_services() {
     
     $SSH_CMD << ENDSSH
 # Create systemd service
-cat > /etc/systemd/system/dzlearn.service << 'EOF'
+cat > /etc/systemd/system/sujetstore.service << 'EOF'
 [Unit]
-Description=DzLearn SvelteKit Application
+Description=SujetStore SvelteKit Application
 After=network.target
 
 [Service]
 Type=simple
 User=root
-WorkingDirectory=/var/www/dzlearn
+WorkingDirectory=/var/www/sujetstore
 ExecStart=/root/.bun/bin/bun run build/index.js
 Restart=always
 RestartSec=10
@@ -165,7 +165,7 @@ EOF
 
 # Reload services
 systemctl daemon-reload
-systemctl enable dzlearn
+systemctl enable sujetstore
 systemctl restart caddy
 
 ENDSSH
@@ -178,13 +178,13 @@ ENDSSH
 # ============================================
 
 start_app() {
-    log "Starting DzLearn application..."
-    $SSH_CMD "systemctl restart dzlearn"
+    log "Starting SujetStore application..."
+    $SSH_CMD "systemctl restart sujetstore"
     
     sleep 3
     
     # Check status
-    $SSH_CMD "systemctl status dzlearn --no-pager" || true
+    $SSH_CMD "systemctl status sujetstore --no-pager" || true
     
     success "Application started!"
     echo ""
@@ -201,23 +201,23 @@ start_app() {
 
 logs() {
     log "Showing application logs..."
-    $SSH_CMD "journalctl -u dzlearn -f"
+    $SSH_CMD "journalctl -u sujetstore -f"
 }
 
 status() {
     log "Checking application status..."
-    $SSH_CMD "systemctl status dzlearn --no-pager"
+    $SSH_CMD "systemctl status sujetstore --no-pager"
 }
 
 restart() {
     log "Restarting application..."
-    $SSH_CMD "systemctl restart dzlearn"
+    $SSH_CMD "systemctl restart sujetstore"
     success "Application restarted!"
 }
 
 stop() {
     log "Stopping application..."
-    $SSH_CMD "systemctl stop dzlearn"
+    $SSH_CMD "systemctl stop sujetstore"
     warn "Application stopped."
 }
 

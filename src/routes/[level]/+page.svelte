@@ -13,7 +13,7 @@
 </script>
 
 <svelte:head>
-	<title>{data.level.name_ar} - DzLearn</title>
+	<title>{data.level.name_ar} - SujetStore</title>
 	<meta name="description" content="فروض واختبارات {data.level.name_ar} - جميع السنوات والمواد" />
 </svelte:head>
 

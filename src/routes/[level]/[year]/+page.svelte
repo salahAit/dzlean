@@ -5,7 +5,7 @@
 </script>
 
 <svelte:head>
-	<title>{data.year.name_ar} - {data.level.name_ar} - DzLearn</title>
+	<title>{data.year.name_ar} - {data.level.name_ar} - SujetStore</title>
 	<meta name="description" content="المواد الدراسية - {data.year.name_ar} - فروض واختبارات" />
 </svelte:head>
 

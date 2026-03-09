@@ -47,7 +47,7 @@
 			<div class="flex h-16 items-center justify-between border-b border-white/10 px-6">
 				<a href="/admin" class="text-primary flex items-center gap-2 text-xl font-bold">
 					<LayoutDashboard size={24} />
-					DzLearn Admin
+					SujetStore Admin
 				</a>
 				<button
 					class="text-white/70 hover:text-white lg:hidden"
@@ -112,7 +112,7 @@
 				<button class="text-white/70 hover:text-white" onclick={() => (isMobileMenuOpen = true)}>
 					<Menu size={24} />
 				</button>
-				<div class="text-primary flex-1 text-center font-bold">DzLearn Admin</div>
+				<div class="text-primary flex-1 text-center font-bold">SujetStore Admin</div>
 			</header>
 
 			<!-- Main area -->

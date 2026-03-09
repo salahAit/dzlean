@@ -6,7 +6,7 @@ async function seedAdmin() {
     console.log('🛡️  Creating admin user...');
 
     const username = 'admin';
-    const email = 'admin@dzlearn.com';
+    const email = 'admin@sujetstore.com';
     const passwordStr = 'admin1234';
 
     // Check if admin already exists

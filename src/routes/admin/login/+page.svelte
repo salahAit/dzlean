@@ -67,7 +67,7 @@
 		</div>
 
 		<div class="mt-8 text-center text-sm text-white/40">
-			&copy; {new Date().getFullYear()} DzLearn. جميع الحقوق محفوظة.
+			&copy; {new Date().getFullYear()} SujetStore. جميع الحقوق محفوظة.
 		</div>
 	</div>
 </div>

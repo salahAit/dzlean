@@ -37,7 +37,7 @@
 </script>
 
 <svelte:head>
-	<title>{doc.titleAr || doc.title} - DzLearn</title>
+	<title>{doc.titleAr || doc.title} - SujetStore</title>
 </svelte:head>
 
 <!-- Fullscreen Modal-like Viewer (covers entire page layout including navbar) -->

@@ -88,7 +88,7 @@
 </script>
 
 <svelte:head>
-	<title>{data.subject.name_ar} - {data.year.name_ar} - DzLearn</title>
+	<title>{data.subject.name_ar} - {data.year.name_ar} - SujetStore</title>
 	<meta name="description" content="فروض واختبارات {data.subject.name_ar} - {data.year.name_ar}" />
 </svelte:head>
 

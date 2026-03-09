@@ -37,7 +37,7 @@
 
 <div class="mb-8">
 	<h1 class="text-3xl font-bold">لوحة التحكم</h1>
-	<p class="text-muted-foreground mt-2">مرحباً بك في لوحة تحكم منصة DzLearn</p>
+	<p class="text-muted-foreground mt-2">مرحباً بك في لوحة تحكم منصة SujetStore</p>
 </div>
 
 <!-- Stats Grid -->

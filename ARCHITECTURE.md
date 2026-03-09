@@ -165,15 +165,15 @@ DELETE FROM sessions WHERE expires_at < datetime('now');
 ### إدارة العمليات (systemd)
 
 ```ini
-# /etc/systemd/system/afidna.service
+# /etc/systemd/system/sujetstore.service
 [Unit]
-Description=Afidna Educational Platform
+Description=SujetStore Educational Platform
 After=network.target
 
 [Service]
 Type=simple
 User=www-data
-WorkingDirectory=/var/www/afidna
+WorkingDirectory=/var/www/sujetstore
 ExecStart=/usr/local/bin/bun run build/index.js
 Restart=always
 RestartSec=3
@@ -187,13 +187,13 @@ WantedBy=multi-user.target
 
 ```bash
 #!/bin/bash
-# /etc/cron.daily/backup-afidna
+# /etc/cron.daily/backup-sujetstore
 
-BACKUP_DIR="/backup/afidna"
+BACKUP_DIR="/backup/sujetstore"
 DATE=$(date +%Y%m%d_%H%M)
 
 # نسخ users.db
-sqlite3 /var/www/afidna/data/users.db ".backup ${BACKUP_DIR}/users_${DATE}.db"
+sqlite3 /var/www/sujetstore/data/users.db ".backup ${BACKUP_DIR}/users_${DATE}.db"
 
 # حذف النسخ الأقدم من 7 أيام
 find ${BACKUP_DIR} -name "*.db" -mtime +7 -delete
@@ -258,7 +258,7 @@ const WINDOW_MS = 15 * 60 * 1000; // 15 minutes
 ## 9. هيكل المجلدات المقترح
 
 ```
-afidna/
+sujetstore/
 ├── src/
 │   ├── lib/
 │   │   ├── server/

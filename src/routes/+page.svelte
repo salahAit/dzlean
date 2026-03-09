@@ -13,7 +13,7 @@
 </script>
 
 <svelte:head>
-	<title>DzLearn - بنك الفروض والاختبارات الجزائرية</title>
+	<title>SujetStore - بنك الفروض والاختبارات الجزائرية</title>
 	<meta
 		name="description"
 		content="منصة تعليمية جزائرية شاملة - فروض، اختبارات، دروس وملخصات لجميع المراحل التعليمية"
@@ -168,7 +168,7 @@
 <section class="border-t border-white/10 bg-white/[0.01] py-16">
 	<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 		<div class="mb-12 text-center">
-			<h2 class="mb-4 text-3xl font-bold lg:text-4xl">لماذا DzLearn؟</h2>
+			<h2 class="mb-4 text-3xl font-bold lg:text-4xl">لماذا SujetStore؟</h2>
 		</div>
 
 		<div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
