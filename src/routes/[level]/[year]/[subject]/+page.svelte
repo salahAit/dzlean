@@ -219,14 +219,10 @@
 											e.preventDefault();
 											openDoc(doc, 'exam');
 										}}
-										class="flex flex-1 items-center justify-center gap-2 rounded-lg py-2 text-sm font-semibold transition-colors
-											{visitedDocs.has(`${doc.id}-exam`)
-											? 'bg-primary/5 text-primary/70 hover:bg-primary/10'
-											: 'bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground'}"
+										class="relative flex flex-1 items-center justify-center gap-2 overflow-hidden rounded-lg bg-indigo-600 py-2.5 text-sm font-semibold text-white
+											shadow-md shadow-indigo-600/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-600/30"
 									>
-										<FileText size={16} /> الموضوع {#if visitedDocs.has(`${doc.id}-exam`)}
-											<CheckCircle size={14} />
-										{/if}
+										<FileText size={16} /> الموضوع
 									</button>
 
 									{#if doc.has_solution}
@@ -235,14 +231,10 @@
 												e.preventDefault();
 												openDoc(doc, 'solution');
 											}}
-											class="flex flex-1 items-center justify-center gap-2 rounded-lg py-2 text-sm font-semibold transition-colors
-												{visitedDocs.has(`${doc.id}-solution`)
-												? 'bg-emerald-500/5 text-emerald-500/70 hover:bg-emerald-500/10'
-												: 'bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white'}"
+											class="relative flex flex-1 items-center justify-center gap-2 overflow-hidden rounded-lg bg-emerald-500 py-2.5 text-sm font-semibold text-white
+												shadow-md shadow-emerald-500/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-emerald-600 hover:shadow-lg hover:shadow-emerald-500/30"
 										>
-											<CheckCircle size={16} /> الحل {#if visitedDocs.has(`${doc.id}-solution`)}
-												<CheckCircle size={14} />
-											{/if}
+											<CheckCircle size={16} /> الحل
 										</button>
 									{/if}
 								</div>
@@ -310,14 +302,10 @@
 										e.preventDefault();
 										openDoc(doc, 'exam');
 									}}
-									class="flex flex-1 items-center justify-center gap-2 rounded-lg py-2 text-sm font-semibold transition-colors
-										{visitedDocs.has(`${doc.id}-exam`)
-										? 'bg-primary/5 text-primary/70 hover:bg-primary/10'
-										: 'bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground'}"
+									class="relative flex flex-1 items-center justify-center gap-2 overflow-hidden rounded-lg bg-indigo-600 py-2.5 text-sm font-semibold text-white
+										shadow-md shadow-indigo-600/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-600/30"
 								>
-									<FileText size={16} /> الموضوع {#if visitedDocs.has(`${doc.id}-exam`)}
-										<CheckCircle size={14} />
-									{/if}
+									<FileText size={16} /> الموضوع
 								</button>
 
 								{#if doc.has_solution}
@@ -326,14 +314,10 @@
 											e.preventDefault();
 											openDoc(doc, 'solution');
 										}}
-										class="flex flex-1 items-center justify-center gap-2 rounded-lg py-2 text-sm font-semibold transition-colors
-											{visitedDocs.has(`${doc.id}-solution`)
-											? 'bg-emerald-500/5 text-emerald-500/70 hover:bg-emerald-500/10'
-											: 'bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white'}"
+										class="relative flex flex-1 items-center justify-center gap-2 overflow-hidden rounded-lg bg-emerald-500 py-2.5 text-sm font-semibold text-white
+											shadow-md shadow-emerald-500/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-emerald-600 hover:shadow-lg hover:shadow-emerald-500/30"
 									>
-										<CheckCircle size={16} /> الحل {#if visitedDocs.has(`${doc.id}-solution`)}
-											<CheckCircle size={14} />
-										{/if}
+										<CheckCircle size={16} /> الحل
 									</button>
 								{/if}
 							</div>
@@ -386,7 +370,7 @@
 							e.preventDefault();
 							printDoc(selectedDoc.pdf_url);
 						}}
-						class="border-primary/30 bg-primary/10 text-primary hover:bg-primary/30 flex h-9 w-9 items-center justify-center rounded-lg border transition-colors"
+						class="flex h-9 w-9 items-center justify-center rounded-lg border border-indigo-500/30 bg-indigo-500/10 text-indigo-400 transition-all hover:bg-indigo-500 hover:text-white"
 						title="طباعة الموضوع"
 					>
 						<Printer size={18} />
@@ -395,7 +379,7 @@
 						href={selectedDoc.pdf_url}
 						download
 						target="_blank"
-						class="text-primary hover:bg-primary hover:text-primary-foreground bg-primary/20 flex h-9 items-center justify-center rounded-lg px-3 text-sm font-semibold transition-colors"
+						class="flex h-9 items-center justify-center rounded-lg bg-indigo-600 px-3 text-sm font-semibold text-white shadow-md shadow-indigo-600/20 transition-all hover:bg-indigo-700 hover:shadow-lg"
 						title="تحميل الموضوع"
 						><Download size={16} /> <span class="hidden sm:mr-1 sm:inline">تحميل</span></a
 					>
@@ -406,7 +390,7 @@
 							e.preventDefault();
 							printDoc(selectedDoc.solution_url);
 						}}
-						class="flex h-9 w-9 items-center justify-center rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-500 transition-colors hover:bg-emerald-500/30 dark:text-emerald-400"
+						class="flex h-9 w-9 items-center justify-center rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 transition-all hover:bg-emerald-500 hover:text-white"
 						title="طباعة التصحيح"
 					>
 						<Printer size={18} />
@@ -415,7 +399,7 @@
 						href={selectedDoc.solution_url}
 						download
 						target="_blank"
-						class="flex h-9 items-center justify-center rounded-lg bg-emerald-500/20 px-3 text-sm font-semibold text-emerald-500 transition-colors hover:bg-emerald-500 hover:text-white"
+						class="flex h-9 items-center justify-center rounded-lg bg-emerald-500 px-3 text-sm font-semibold text-white shadow-md shadow-emerald-500/20 transition-all hover:bg-emerald-600 hover:shadow-lg"
 						title="تحميل التصحيح"
 						><Download size={16} /> <span class="hidden sm:mr-1 sm:inline">تحميل</span></a
 					>
@@ -461,7 +445,7 @@
 				<button
 					onclick={() => openDoc(selectedDoc, 'exam')}
 					class="rounded-full px-4 py-2 text-sm font-bold transition-all {activeTab === 'exam'
-						? 'bg-primary text-primary-foreground shadow-sm'
+						? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
 						: 'text-white/70 hover:bg-white/10 hover:text-white'}"
 				>
 					الموضوع
@@ -469,7 +453,7 @@
 				<button
 					onclick={() => openDoc(selectedDoc, 'solution')}
 					class="rounded-full px-4 py-2 text-sm font-bold transition-all {activeTab === 'solution'
-						? 'bg-emerald-500 text-white shadow-sm'
+						? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20'
 						: 'text-white/70 hover:bg-white/10 hover:text-white'}"
 				>
 					التصحيح
