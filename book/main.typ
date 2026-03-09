@@ -1,5 +1,5 @@
 #set document(title: "دليل منصة أفدنا التعليمية", author: "فريق أفدنا")
-#set text(lang: "ar", dir: rtl, size: 14pt)
+#set text(lang: "ar", dir: rtl, size: 14pt, font: "KFGQPC Uthman Taha Naskh")
 #set page(paper: "a4", numbering: "1")
 #set heading(numbering: "1.1.")
 #set par(justify: true, leading: 1.5em)
