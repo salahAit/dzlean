@@ -7,6 +7,7 @@
 		BookOpen,
 		FileText,
 		Brain,
+		Database,
 		LogOut,
 		Menu,
 		X
@@ -22,6 +23,7 @@
 		{ name: 'السنوات الدراسية', href: '/admin/years', icon: CalendarDays },
 		{ name: 'المواد الدراسية', href: '/admin/subjects', icon: BookOpen },
 		{ name: 'التمارين التفاعلية', href: '/admin/quizzes', icon: Brain },
+		{ name: 'بنك الأسئلة', href: '/admin/question-bank', icon: Database },
 		{ name: 'الوثائق', href: '/admin/documents', icon: FileText }
 	];
 </script>

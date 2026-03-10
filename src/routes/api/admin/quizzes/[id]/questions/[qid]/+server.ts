@@ -1,47 +1,44 @@
 import { json } from '@sveltejs/kit';
 import { contentDatabase } from '$lib/server/db';
 import { quizQuestions, quizzes } from '$lib/server/db/schema-content';
-import { eq, sql } from 'drizzle-orm';
+import { eq, and, sql } from 'drizzle-orm';
 
-// Update individual question
+// Update individual question linkage (points and order)
 export async function PUT({ params, request, locals }) {
     if (!locals.user || !['superadmin', 'admin', 'editor'].includes(locals.user.role)) {
         return json({ error: 'Unauthorized' }, { status: 403 });
     }
 
-    const questionId = parseInt(params.qid);
+    const linkId = parseInt(params.qid);
     const data = await request.json();
 
     try {
         await contentDatabase
             .update(quizQuestions)
             .set({
-                questionText: data.questionText,
-                questionTextAr: data.questionTextAr,
-                questionData: JSON.stringify(data.questionData || {}),
-                explanation: data.explanation || '',
-                points: data.points || 1
+                points: data.points,
+                order: data.order
             })
-            .where(eq(quizQuestions.id, questionId));
+            .where(eq(quizQuestions.id, linkId));
 
         return json({ success: true });
     } catch (error) {
-        console.error('Update question error:', error);
-        return json({ error: 'Failed to update question' }, { status: 500 });
+        console.error('Update question link error:', error);
+        return json({ error: 'Failed to update question link' }, { status: 500 });
     }
 }
 
-// Delete question
+// Delete question linkage from this quiz
 export async function DELETE({ params, locals }) {
     if (!locals.user || !['superadmin', 'admin', 'editor'].includes(locals.user.role)) {
         return json({ error: 'Unauthorized' }, { status: 403 });
     }
 
     const quizId = parseInt(params.id);
-    const questionId = parseInt(params.qid);
+    const linkId = parseInt(params.qid);
 
     try {
-        await contentDatabase.delete(quizQuestions).where(eq(quizQuestions.id, questionId));
+        await contentDatabase.delete(quizQuestions).where(eq(quizQuestions.id, linkId));
 
         // Update quiz question count
         await contentDatabase
@@ -51,6 +48,6 @@ export async function DELETE({ params, locals }) {
 
         return json({ success: true });
     } catch (error) {
-        return json({ error: 'Failed to delete question' }, { status: 500 });
+        return json({ error: 'Failed to delete question link' }, { status: 500 });
     }
 }

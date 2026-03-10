@@ -13,6 +13,7 @@
 	} from 'lucide-svelte';
 	import { onMount, tick } from 'svelte';
 	import QuestionForm from './QuestionForm.svelte'; // The dynamic wrapper we will create
+	import QuestionBankModal from './QuestionBankModal.svelte';
 
 	let quizId = $derived(page.params.id);
 	let quiz = $state<any>(null);
@@ -23,6 +24,7 @@
 
 	// Builder State
 	let showTypeSelector = $state(false);
+	let showBankModal = $state(false);
 	let editingQuestion = $state<any>(null); // null = not editing, {} = new question
 
 	const QUESTION_TYPES = [
@@ -119,7 +121,7 @@
 	}
 
 	async function deleteQuestion(id: number) {
-		if (confirm('هل أنت متأكد من حذف هذا السؤال؟')) {
+		if (confirm('هل أنت متأكد من إزالة هذا السؤال من هذا التمرين؟ (السؤال سيبقى في بنك الأسئلة)')) {
 			await fetch(`/api/admin/quizzes/${quizId}/questions/${id}`, { method: 'DELETE' });
 			await loadQuiz();
 		}
@@ -167,7 +169,9 @@
 
 <div class="mx-auto max-w-5xl space-y-6">
 	<!-- Header -->
-	<div class="flex items-center justify-between border-b border-white/10 pb-4">
+	<div
+		class="flex flex-col gap-4 border-b border-white/10 pb-4 sm:flex-row sm:items-center sm:justify-between"
+	>
 		<div class="flex items-center gap-4">
 			<a href="/admin/quizzes" class="text-white/50 transition-colors hover:text-white">
 				<ArrowRight size={24} />
@@ -179,14 +183,29 @@
 				{/if}
 			</div>
 		</div>
-		<button
-			onclick={() => (showTypeSelector = true)}
-			class="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 font-bold text-white shadow-lg transition-all hover:bg-blue-700"
-			disabled={editingQuestion !== null}
-		>
-			<Plus size={18} /> إضافة سؤال
-		</button>
+		<div class="flex gap-3">
+			<button
+				onclick={() => (showBankModal = true)}
+				class="flex items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-2 font-bold text-emerald-400 transition-all hover:bg-emerald-500/20"
+				disabled={editingQuestion !== null}
+			>
+				استيراد من البنك
+			</button>
+			<button
+				onclick={() => (showTypeSelector = true)}
+				class="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 font-bold text-white shadow-lg transition-all hover:bg-blue-700"
+				disabled={editingQuestion !== null}
+			>
+				<Plus size={18} /> سؤال جديد
+			</button>
+		</div>
 	</div>
+
+	<QuestionBankModal
+		bind:isOpen={showBankModal}
+		quizId={Number(quizId)}
+		onImportSuccess={loadQuiz}
+	/>
 
 	{#if error}
 		<div class="rounded-lg bg-red-500/10 p-4 text-red-400">{error}</div>

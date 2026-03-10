@@ -147,24 +147,67 @@ export const quizzes = sqliteTable('quizzes', {
 });
 
 /**
- * 8. أسئلة التمارين (Quiz Questions)
+ * 8. تصنيفات الأسئلة (Question Categories)
+ * Moodle-style: Hierarchical tree structure for question banks
  */
-export const quizQuestions = sqliteTable('quiz_questions', {
+export const questionCategories = sqliteTable('question_categories', {
 	id: integer('id').primaryKey({ autoIncrement: true }),
-	quizId: integer('quiz_id')
-		.references(() => quizzes.id, { onDelete: 'cascade' })
+	name: text('name').notNull(),
+	description: text('description'),
+
+	// Self-referencing FK to build a tree structure
+	// If parentId is null, it's a top-level category
+	parentId: integer('parent_id'),
+
+	// Context association (Optional, but often tied to a specific subject/year)
+	yearSubjectId: integer('year_subject_id').references(() => yearSubjects.id),
+
+	createdAt: text('created_at').default(sql`(datetime('now'))`),
+	updatedAt: text('updated_at')
+});
+
+/**
+ * 9. بنك الأسئلة (Global Question Bank)
+ * Moodle-style: Questions belong to categories, not just a single quiz or flat subject list.
+ */
+export const questions = sqliteTable('questions', {
+	id: integer('id').primaryKey({ autoIncrement: true }),
+
+	// Replaced flat yearSubjectId and trimesterId with hierarchical category
+	categoryId: integer('category_id')
+		.references(() => questionCategories.id)
 		.notNull(),
 
 	type: text('type', {
 		enum: ['mcq', 'true_false', 'ordering', 'drag_drop', 'matching', 'fill_blank', 'short_answer', 'cloze']
 	}).notNull(),
 
+	difficulty: text('difficulty', { enum: ['easy', 'medium', 'hard'] }).default('medium'),
+
 	questionText: text('question_text').notNull(),
 	questionTextAr: text('question_text_ar'),
-	questionData: text('question_data').notNull(), // JSON
+	questionData: text('question_data').notNull(), // JSON payload specific to the type
 	explanation: text('explanation'),
-	points: integer('points').default(1).notNull(),
-	order: integer('order').default(0).notNull()
+
+	createdAt: text('created_at').default(sql`(datetime('now'))`),
+	updatedAt: text('updated_at')
+});
+
+/**
+ * 9. ربط الأسئلة بالتمارين (Quiz Questions Join Table)
+ * Many-to-Many relationship between Quizzes and Questions
+ */
+export const quizQuestions = sqliteTable('quiz_questions', {
+	id: integer('id').primaryKey({ autoIncrement: true }),
+	quizId: integer('quiz_id')
+		.references(() => quizzes.id, { onDelete: 'cascade' })
+		.notNull(),
+	questionId: integer('question_id')
+		.references(() => questions.id, { onDelete: 'cascade' })
+		.notNull(),
+
+	points: integer('points').default(1).notNull(), // يمكن تخصيص النقاط داخل هذا الاختبار تحديداً
+	order: integer('order').default(0).notNull() // ترتيب السؤال في هذا الاختبار
 });
 
 // ============================================
@@ -193,5 +236,11 @@ export type DocumentType = 'exam' | 'test' | 'lesson' | 'summary' | 'exercise' |
 
 export type Quiz = typeof quizzes.$inferSelect;
 export type NewQuiz = typeof quizzes.$inferInsert;
+
+export type Question = typeof questions.$inferSelect;
+export type NewQuestion = typeof questions.$inferInsert;
+
 export type QuizQuestion = typeof quizQuestions.$inferSelect;
+export type NewQuizQuestion = typeof quizQuestions.$inferInsert;
+
 export type QuestionType = 'mcq' | 'true_false' | 'ordering' | 'drag_drop' | 'matching' | 'fill_blank' | 'short_answer' | 'cloze';

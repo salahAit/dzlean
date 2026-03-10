@@ -3,6 +3,7 @@ import { contentDatabase } from '$lib/server/db';
 import {
     quizzes,
     quizQuestions,
+    questions,
     yearSubjects,
     subjects,
     years,
@@ -32,17 +33,38 @@ export async function load({ params }) {
         error(404, 'التمرين غير موجود');
     }
 
-    const questions = await contentDatabase
-        .select()
+    const rawQuestions = await contentDatabase
+        .select({
+            id: quizQuestions.id,
+            quizId: quizQuestions.quizId,
+            questionId: quizQuestions.questionId,
+            points: quizQuestions.points,
+            order: quizQuestions.order,
+            // Nested question data
+            type: questions.type,
+            difficulty: questions.difficulty,
+            questionText: questions.questionText,
+            questionTextAr: questions.questionTextAr,
+            questionData: questions.questionData,
+            explanation: questions.explanation
+        })
         .from(quizQuestions)
+        .innerJoin(questions, eq(quizQuestions.questionId, questions.id))
         .where(eq(quizQuestions.quizId, quizRow.quiz.id))
         .orderBy(asc(quizQuestions.order));
 
     // Parse questionData JSON
-    const parsedQuestions = questions.map((q) => ({
-        ...q,
-        questionData: JSON.parse(q.questionData)
-    }));
+    const parsedQuestions = rawQuestions.map((q) => {
+        let parsedData = {};
+        try {
+            parsedData = JSON.parse(q.questionData as string);
+        } catch (e) { }
+
+        return {
+            ...q,
+            questionData: parsedData
+        };
+    });
 
     return {
         quiz: quizRow.quiz,

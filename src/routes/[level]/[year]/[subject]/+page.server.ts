@@ -2,7 +2,7 @@ import type { PageServerLoad } from './$types';
 import { Database } from 'bun:sqlite';
 import { error } from '@sveltejs/kit';
 
-export const load: PageServerLoad = async ({ params }) => {
+export const load: PageServerLoad = async ({ params, locals }) => {
 	const db = new Database('data/content.db', { readonly: true });
 
 	const level = db.query('SELECT * FROM education_levels WHERE slug = ?').get(params.level) as any;
@@ -45,7 +45,26 @@ export const load: PageServerLoad = async ({ params }) => {
 		)
 		.all(yearSubject.id);
 
+	const quizzes = db
+		.query(
+			`
+		SELECT * FROM quizzes 
+		WHERE year_subject_id = ? AND is_published = 1
+		ORDER BY trimester_id, title
+	`
+		)
+		.all(yearSubject.id);
+
 	db.close();
 
-	return { level, year, subject, yearSubject, trimesters, documents };
+	return {
+		level,
+		year,
+		subject,
+		yearSubject,
+		trimesters,
+		documents,
+		quizzes,
+		user: locals.user
+	};
 };

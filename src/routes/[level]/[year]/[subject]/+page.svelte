@@ -14,7 +14,11 @@
 		Inbox,
 		Filter,
 		SlidersHorizontal,
-		X
+		X,
+		Gamepad2,
+		Star,
+		PlusCircle,
+		FilePlus2
 	} from 'lucide-svelte';
 	import DynamicIcon from '$lib/components/DynamicIcon.svelte';
 	import { toggleBookmark, isBookmarked } from '$lib/stores/bookmarks.svelte';
@@ -27,6 +31,9 @@
 	let isFullscreen = $state(false);
 
 	let activeTrimesterTab = $state<string>('t1');
+
+	// Admin Editing Mode
+	let isEditingMode = $state(false);
 
 	// Auto-select the first tab with docs on initial load
 	$effect(() => {
@@ -44,11 +51,21 @@
 	let filterYear = $state('all');
 	let filterHasSolution = $state(false);
 
+	// Combine documents and quizzes into a single activities array
+	let allActivities = $derived([
+		...data.documents.map((d: any) => ({ ...d, _itemType: 'document' })),
+		...data.quizzes.map((q: any) => ({ ...q, _itemType: 'quiz', type: 'interactive_quiz' }))
+	]);
+
 	// Reactive filtered documents
 	let filteredDocs = $derived.by(() => {
 		// Include docs for the active trimester + null-trimester docs (lessons/summaries)
-		let docs = data.documents.filter(
-			(d: any) => d.trimester_id === activeTrimesterTab || d.trimester_id === null
+		let docs = allActivities.filter(
+			(d: any) =>
+				d.trimester_id === activeTrimesterTab ||
+				d.trimester_id === null ||
+				d.trimesterId === activeTrimesterTab ||
+				d.trimesterId === null
 		);
 
 		if (filterType !== 'all') {
@@ -139,12 +156,19 @@
 		lesson: 'درس',
 		summary: 'ملخص',
 		exercise: 'تمرين',
-		solution: 'حل'
+		solution: 'حل',
+		interactive_quiz: 'تمرين تفاعلي'
 	};
 
 	// Group documents by trimester (includes null-trimester docs like lessons/summaries)
 	function getDocsByTrimester(trimId: string | null) {
-		return data.documents.filter((d: any) => d.trimester_id === trimId || d.trimester_id === null);
+		return allActivities.filter(
+			(d: any) =>
+				d.trimester_id === trimId ||
+				d.trimester_id === null ||
+				d.trimesterId === trimId ||
+				d.trimesterId === null
+		);
 	}
 </script>
 
@@ -160,9 +184,11 @@
 	<meta property="og:type" content="website" />
 </svelte:head>
 
-<!-- Breadcrumb -->
+<!-- Breadcrumb and Admin Tools -->
 <div class="border-b border-white/10 bg-white/[0.02]">
-	<div class="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
+	<div
+		class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8"
+	>
 		<nav class="text-muted-foreground flex flex-wrap items-center gap-2 text-sm">
 			<a href="/" class="hover:text-foreground transition-colors">الرئيسية</a>
 			<span class="opacity-50">/</span>
@@ -176,12 +202,40 @@
 			<span class="opacity-50">/</span>
 			<span class="text-foreground font-semibold">{data.subject.name_ar}</span>
 		</nav>
+
+		{#if data.user && data.user.role === 'admin'}
+			<div
+				class="flex items-center gap-3 rounded-full border border-indigo-500/20 bg-indigo-500/10 px-4 py-2 shadow-inner"
+			>
+				<span class="text-sm font-bold text-indigo-400">وضع التحرير (للمدير)</span>
+				<button
+					type="button"
+					role="switch"
+					aria-checked={isEditingMode}
+					onclick={() => (isEditingMode = !isEditingMode)}
+					class="focus:ring-ring focus:ring-offset-background relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200 focus:ring-2 focus:ring-offset-2 focus:outline-none {isEditingMode
+						? 'bg-indigo-500'
+						: 'bg-white/10'}"
+				>
+					<span
+						class="pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-lg ring-0 transition-transform duration-200 {isEditingMode
+							? '-translate-x-5'
+							: 'translate-x-0.5'}"
+					></span>
+				</button>
+			</div>
+		{/if}
 	</div>
 </div>
 
 <!-- Subject Header -->
-<section class="hero-gradient py-10 lg:py-14">
-	<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+<section class="hero-gradient relative overflow-hidden py-10 lg:py-14">
+	{#if isEditingMode}
+		<div
+			class="pointer-events-none absolute inset-0 m-4 animate-pulse rounded-xl border-4 border-dashed border-indigo-500/30"
+		></div>
+	{/if}
+	<div class="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 		<div class="flex items-center justify-center gap-5">
 			<div
 				class="flex h-16 w-16 items-center justify-center rounded-2xl text-3xl"
@@ -202,6 +256,10 @@
 				<div class="text-muted-foreground text-xs">وثيقة</div>
 			</div>
 			<div class="text-center">
+				<div class="text-xl font-bold text-emerald-400">{data.quizzes.length}</div>
+				<div class="text-muted-foreground text-xs">تمرين تفاعلي</div>
+			</div>
+			<div class="text-center">
 				<div class="text-xl font-bold text-red-400">
 					{data.documents.filter((d: any) => d.type === 'exam').length}
 				</div>
@@ -218,9 +276,9 @@
 </section>
 
 <!-- Documents Content -->
-<section class="py-10 lg:py-14">
+<section class="py-10 lg:py-14 {isEditingMode ? 'bg-indigo-950/20' : ''}">
 	<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-		{#if data.documents.length === 0}
+		{#if allActivities.length === 0 && !isEditingMode}
 			<div class="text-muted-foreground flex flex-col items-center py-16 text-center">
 				<Inbox size={48} class="mb-4 opacity-50" />
 				<h3 class="mb-2 text-xl font-bold">لا توجد وثائق بعد</h3>
@@ -322,6 +380,29 @@
 						<p class="text-sm">لا توجد وثائق مطابقة للفلاتر المحددة في هذا الفصل</p>
 					</div>
 				{/each}
+
+				{#if isEditingMode}
+					<div
+						class="mt-8 flex flex-col justify-center gap-4 rounded-xl border border-dashed border-indigo-500/30 bg-indigo-500/5 p-6 shadow-sm sm:flex-row"
+					>
+						<!-- Add Interactive Quiz -->
+						<a
+							href={`/admin/quizzes/new?ysId=${data.yearSubject.id}&tId=${activeTrimesterTab === 'null' ? '' : activeTrimesterTab}`}
+							class="group flex flex-1 items-center justify-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-6 py-3 font-bold text-emerald-400 shadow-sm transition-all hover:bg-emerald-500/20 hover:shadow-md sm:flex-none"
+						>
+							<PlusCircle size={20} class="transition-transform group-hover:rotate-90" /> أضف تمريناً
+							تفاعلياً
+						</a>
+						<!-- Add Document -->
+						<a
+							href={`/admin/documents?add=true&ysId=${data.yearSubject.id}&tId=${activeTrimesterTab === 'null' ? '' : activeTrimesterTab}`}
+							class="group flex flex-1 items-center justify-center gap-2 rounded-xl border border-blue-500/20 bg-blue-500/10 px-6 py-3 font-bold text-blue-400 shadow-sm transition-all hover:bg-blue-500/20 hover:shadow-md sm:flex-none"
+						>
+							<FilePlus2 size={20} class="transition-transform group-hover:rotate-90" /> أضف وثيقة أو
+							موضوع
+						</a>
+					</div>
+				{/if}
 			</div>
 		{/if}
 	</div>
@@ -330,13 +411,15 @@
 {#snippet docRow(doc: any, accentColor: string)}
 	<div
 		class="glass-card group flex flex-col justify-between gap-4 border-r-4 p-4 transition-all duration-300 hover:bg-white/5 sm:flex-row sm:items-center"
-		style="border-right-color: {accentColor}"
+		style="border-right-color: {doc._itemType === 'quiz' ? '#10b981' : accentColor}"
 	>
 		<div class="flex min-w-0 flex-1 items-start gap-3 sm:items-center sm:gap-4">
 			<div
 				class="text-primary/70 group-hover:bg-primary/10 group-hover:text-primary flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white/5 transition-colors"
 			>
-				{#if doc.type === 'exam'}
+				{#if doc._itemType === 'quiz'}
+					<Gamepad2 size={24} class="text-emerald-400" />
+				{:else if doc.type === 'exam'}
 					<FileText size={24} />
 				{:else if doc.type === 'test'}
 					<FileEdit size={24} />
@@ -358,7 +441,10 @@
 						{doc.title_ar || doc.title}
 					</h3>
 					<span
-						class="badge-{doc.type} shrink-0 rounded border px-1.5 py-0.5 text-[10px] font-medium sm:text-xs"
+						class="badge-{doc.type} shrink-0 rounded border px-1.5 py-0.5 text-[10px] font-medium sm:text-xs {doc._itemType ===
+						'quiz'
+							? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400'
+							: ''}"
 					>
 						{typeLabels[doc.type] || doc.type}
 					</span>
@@ -374,6 +460,20 @@
 						<span class="flex items-center gap-1.5"
 							><Calendar size={14} class="opacity-70" /> {doc.academic_year}</span
 						>
+					{/if}
+					{#if isEditingMode && doc.isPublished === false}
+						<span
+							class="flex items-center gap-1.5 rounded bg-orange-500/10 px-2 py-0.5 font-bold text-orange-400"
+						>
+							مخفي عن الطلاب
+						</span>
+					{/if}
+					{#if doc.isPremium}
+						<span
+							class="flex items-center gap-1.5 rounded bg-amber-500/10 px-2 py-0.5 font-bold text-amber-400"
+						>
+							<Star size={12} class="fill-current" /> للمشتركين فقط
+						</span>
 					{/if}
 				</div>
 			</div>
@@ -394,26 +494,55 @@
 				<Bookmark size={16} class={isBookmarked(doc.id) ? 'fill-current' : ''} />
 			</button>
 
-			<button
-				onclick={(e) => {
-					e.preventDefault();
-					openDoc(doc, 'exam');
-				}}
-				class="relative flex flex-1 items-center justify-center gap-1 overflow-hidden rounded-lg bg-blue-600 py-2 text-[11px] font-semibold text-white shadow-md shadow-blue-600/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/30 sm:flex-none sm:px-4 sm:py-2 sm:text-sm"
-			>
-				<FileText size={14} class="sm:h-4 sm:w-4" /> الموضوع
-			</button>
+			{#if doc._itemType === 'quiz'}
+				<a
+					href={`/quizzes/${doc.slug}`}
+					class="relative flex flex-1 items-center justify-center gap-1 overflow-hidden rounded-lg bg-emerald-600 py-2 text-[11px] font-semibold text-white shadow-md shadow-emerald-600/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-emerald-700 hover:shadow-lg hover:shadow-emerald-600/30 sm:flex-none sm:px-4 sm:py-2 sm:text-sm"
+				>
+					<Gamepad2 size={14} class="sm:h-4 sm:w-4" /> ابدأ التمرين
+				</a>
 
-			{#if doc.has_solution}
+				{#if isEditingMode}
+					<a
+						href={`/admin/quizzes/${doc.id}/builder`}
+						class="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-400 transition-colors hover:bg-indigo-500/20"
+						title="تعديل في المدير"
+					>
+						<FileEdit size={16} />
+					</a>
+				{/if}
+			{:else}
 				<button
 					onclick={(e) => {
 						e.preventDefault();
-						openDoc(doc, 'solution');
+						openDoc(doc, 'exam');
 					}}
-					class="relative flex flex-1 items-center justify-center gap-1 overflow-hidden rounded-lg bg-emerald-500 py-2 text-[11px] font-semibold text-white shadow-md shadow-emerald-500/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-emerald-600 hover:shadow-lg hover:shadow-emerald-500/30 sm:flex-none sm:px-4 sm:py-2 sm:text-sm"
+					class="relative flex flex-1 items-center justify-center gap-1 overflow-hidden rounded-lg bg-blue-600 py-2 text-[11px] font-semibold text-white shadow-md shadow-blue-600/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/30 sm:flex-none sm:px-4 sm:py-2 sm:text-sm"
 				>
-					<CheckCircle size={14} class="sm:h-4 sm:w-4" /> الحل
+					<FileText size={14} class="sm:h-4 sm:w-4" /> الموضوع
 				</button>
+
+				{#if doc.has_solution}
+					<button
+						onclick={(e) => {
+							e.preventDefault();
+							openDoc(doc, 'solution');
+						}}
+						class="relative flex flex-1 items-center justify-center gap-1 overflow-hidden rounded-lg bg-emerald-500 py-2 text-[11px] font-semibold text-white shadow-md shadow-emerald-500/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-emerald-600 hover:shadow-lg hover:shadow-emerald-500/30 sm:flex-none sm:px-4 sm:py-2 sm:text-sm"
+					>
+						<CheckCircle size={14} class="sm:h-4 sm:w-4" /> الحل
+					</button>
+				{/if}
+
+				{#if isEditingMode}
+					<a
+						href={`/admin/documents`}
+						class="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-400 transition-colors hover:bg-indigo-500/20"
+						title="إدارة في المدير"
+					>
+						<FileEdit size={16} />
+					</a>
+				{/if}
 			{/if}
 		</div>
 	</div>

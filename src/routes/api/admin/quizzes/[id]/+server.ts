@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import { contentDatabase } from '$lib/server/db';
-import { quizzes, quizQuestions } from '$lib/server/db/schema-content';
+import { quizzes, quizQuestions, questions } from '$lib/server/db/schema-content';
 import { eq, asc } from 'drizzle-orm';
 
 // Get quiz details + questions
@@ -15,15 +15,34 @@ export async function GET({ params, locals }) {
 
     if (!quiz) return json({ error: 'Not found' }, { status: 404 });
 
-    const questions = await contentDatabase
-        .select()
+    const rawQuestions = await contentDatabase
+        .select({
+            id: quizQuestions.id,
+            quizId: quizQuestions.quizId,
+            questionId: quizQuestions.questionId,
+            points: quizQuestions.points,
+            order: quizQuestions.order,
+            type: questions.type,
+            difficulty: questions.difficulty,
+            questionText: questions.questionText,
+            questionTextAr: questions.questionTextAr,
+            questionData: questions.questionData,
+            explanation: questions.explanation
+        })
         .from(quizQuestions)
+        .innerJoin(questions, eq(quizQuestions.questionId, questions.id))
         .where(eq(quizQuestions.quizId, quizId))
         .orderBy(asc(quizQuestions.order));
 
     return json({
         ...quiz,
-        questions: questions.map((q) => ({ ...q, questionData: JSON.parse(q.questionData) }))
+        questions: rawQuestions.map((q) => {
+            let parsedData = {};
+            try {
+                parsedData = JSON.parse(q.questionData as string);
+            } catch (e) { }
+            return { ...q, questionData: parsedData };
+        })
     });
 }
 
