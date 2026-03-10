@@ -30,6 +30,17 @@ export const handle: Handle = async ({ event, resolve }) => {
 			if (!event.locals.user) {
 				throw redirect(302, '/admin/login');
 			}
+			// Role-based access control
+			const role = event.locals.user.role;
+			// Only superadmin can manage users
+			if (path.startsWith('/admin/users') && role !== 'superadmin') {
+				throw redirect(302, '/admin');
+			}
+			// Editors cannot delete (handled at API level)
+			// Students should not access admin at all
+			if (role === 'student') {
+				throw redirect(302, '/');
+			}
 		}
 	}
 

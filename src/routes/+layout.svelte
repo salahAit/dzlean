@@ -1,8 +1,9 @@
 <script lang="ts">
 	import '../app.css';
 	import { ModeWatcher, toggleMode } from 'mode-watcher';
-	import { Sun, Moon, BookOpen, Backpack, GraduationCap } from 'lucide-svelte';
+	import { Sun, Moon, BookOpen, Backpack, GraduationCap, Bookmark, BarChart3 } from 'lucide-svelte';
 	import DynamicIcon from '$lib/components/DynamicIcon.svelte';
+	import SearchBar from '$lib/components/SearchBar.svelte';
 	import { page } from '$app/stores';
 
 	let { children } = $props();
@@ -54,6 +55,9 @@
 					<GraduationCap size={18} /> ثانوي
 				</a>
 
+				<!-- Search -->
+				<SearchBar />
+
 				<!-- Theme Toggle -->
 				<button
 					onclick={toggleMode}
@@ -68,6 +72,7 @@
 
 			<!-- Mobile menu button and theme toggle -->
 			<div class="flex items-center gap-2 md:hidden">
+				<SearchBar />
 				<button
 					onclick={toggleMode}
 					class="text-muted-foreground rounded-lg p-2 transition-colors hover:bg-black/5 dark:hover:bg-white/5"
@@ -200,6 +205,20 @@
 			<div>
 				<h3 class="mb-4 text-lg font-bold">حول الموقع</h3>
 				<ul class="text-muted-foreground space-y-2 text-sm">
+					<li>
+						<a
+							href="/bookmarks"
+							class="flex items-center gap-2 transition-colors hover:text-amber-400"
+							><Bookmark size={16} /> المفضلة</a
+						>
+					</li>
+					<li>
+						<a
+							href="/progress"
+							class="flex items-center gap-2 transition-colors hover:text-blue-400"
+							><BarChart3 size={16} /> تقدمي</a
+						>
+					</li>
 					<li><a href="/about" class="hover:text-foreground transition-colors">من نحن</a></li>
 					<li>
 						<p>المحتوى متوافق مع المنهاج الدراسي الجزائري</p>

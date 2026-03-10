@@ -12,7 +12,7 @@ export const users = sqliteTable('users', {
 	email: text('email').notNull().unique(),
 	passwordHash: text('password_hash').notNull(),
 	name: text('name').notNull(),
-	role: text('role', { enum: ['admin', 'student'] })
+	role: text('role', { enum: ['superadmin', 'admin', 'editor', 'student'] })
 		.default('student')
 		.notNull(),
 	isActive: integer('is_active', { mode: 'boolean' }).default(true).notNull(),
@@ -34,7 +34,7 @@ export const sessions = sqliteTable('sessions', {
 // TYPE EXPORTS
 // ============================================
 
-export type Role = 'admin' | 'student';
+export type Role = 'superadmin' | 'admin' | 'editor' | 'student';
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Session = typeof sessions.$inferSelect;

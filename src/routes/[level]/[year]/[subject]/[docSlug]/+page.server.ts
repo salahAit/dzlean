@@ -7,7 +7,7 @@ import {
 	educationLevels,
 	yearSubjects
 } from '$lib/server/db/schema-content';
-import { eq } from 'drizzle-orm';
+import { eq, ne, and } from 'drizzle-orm';
 
 export async function load({ params }) {
 	const docSlug = params.docSlug;
@@ -32,10 +32,31 @@ export async function load({ params }) {
 		error(404, 'الوثيقة غير موجودة');
 	}
 
+	// Fetch related documents from the same subject
+	const relatedDocs = await contentDatabase
+		.select({
+			id: documents.id,
+			title: documents.title,
+			titleAr: documents.titleAr,
+			slug: documents.slug,
+			type: documents.type,
+			hasSolution: documents.hasSolution
+		})
+		.from(documents)
+		.where(
+			and(
+				eq(documents.yearSubjectId, docRow.doc.yearSubjectId),
+				ne(documents.id, docRow.doc.id),
+				eq(documents.isPublished, true)
+			)
+		)
+		.limit(5);
+
 	return {
 		document: docRow.doc,
 		subject: docRow.subject,
 		year: docRow.year,
-		level: docRow.level
+		level: docRow.level,
+		relatedDocs
 	};
 }

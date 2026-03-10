@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Printer, Download, X } from 'lucide-svelte';
+	import { Printer, Download, X, Share2, FileText, FileEdit, CheckCircle } from 'lucide-svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 
@@ -11,6 +11,16 @@
 	let subject = $derived(data.subject);
 	let year = $derived(data.year);
 	let level = $derived(data.level);
+	let relatedDocs = $derived(data.relatedDocs || []);
+
+	const typeLabels: Record<string, string> = {
+		exam: 'اختبار',
+		test: 'فرض',
+		lesson: 'درس',
+		summary: 'ملخص',
+		exercise: 'تمرين',
+		solution: 'حل'
+	};
 
 	function printDoc(url: string) {
 		const iframe = document.createElement('iframe');
@@ -26,7 +36,6 @@
 	}
 
 	function closeDoc() {
-		// Try to go back, if there's no history or we landed directly here, go to subject page
 		const subjectPath = `/${level.slug}/${year.slug}/${subject.slug}`;
 		if (window.history.length > 2) {
 			window.history.back();
@@ -34,10 +43,29 @@
 			goto(subjectPath);
 		}
 	}
+
+	async function shareDoc() {
+		const url = window.location.href;
+		const title = doc.titleAr || doc.title;
+		if (navigator.share) {
+			try {
+				await navigator.share({ title, url });
+			} catch (e) {}
+		} else {
+			await navigator.clipboard.writeText(url);
+			// Could add a toast here
+		}
+	}
 </script>
 
 <svelte:head>
 	<title>{doc.titleAr || doc.title} - SujetStore</title>
+	<meta property="og:title" content="{doc.titleAr || doc.title} - SujetStore" />
+	<meta
+		property="og:description"
+		content="{doc.titleAr || doc.title} | {subject.name_ar} - {year.name_ar}"
+	/>
+	<meta property="og:type" content="article" />
 </svelte:head>
 
 <!-- Fullscreen Modal-like Viewer (covers entire page layout including navbar) -->
@@ -101,6 +129,14 @@
 					<Download size={16} /> <span class="hidden sm:inline">تحميل التصحيح</span>
 				</a>
 			{/if}
+
+			<button
+				onclick={shareDoc}
+				class="border-primary/30 bg-primary/10 text-primary hover:bg-primary/30 flex h-9 w-9 items-center justify-center rounded-lg border transition-colors"
+				title="مشاركة"
+			>
+				<Share2 size={18} />
+			</button>
 
 			<button
 				onclick={closeDoc}
@@ -172,3 +208,38 @@
 		</div>
 	{/if}
 </div>
+
+<!-- Related Documents -->
+{#if relatedDocs.length > 0}
+	<section class="py-8">
+		<div class="mx-auto max-w-5xl px-4">
+			<h3 class="mb-4 text-lg font-bold">وثائق ذات صلة</h3>
+			<div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+				{#each relatedDocs as rdoc}
+					<a
+						href="/{level.slug}/{year.slug}/{subject.slug}/{rdoc.slug}"
+						class="bg-card flex items-center gap-3 rounded-xl border p-3 transition-all hover:bg-white/5"
+					>
+						<div
+							class="text-muted-foreground flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white/5"
+						>
+							{#if rdoc.type === 'exam'}
+								<FileText size={18} />
+							{:else if rdoc.type === 'test'}
+								<FileEdit size={18} />
+							{:else}
+								<FileText size={18} />
+							{/if}
+						</div>
+						<div class="min-w-0 flex-1">
+							<p class="truncate text-sm font-bold">{rdoc.titleAr || rdoc.title}</p>
+							<span class="badge-{rdoc.type} rounded border px-1.5 py-0.5 text-[10px]">
+								{typeLabels[rdoc.type] || rdoc.type}
+							</span>
+						</div>
+					</a>
+				{/each}
+			</div>
+		</div>
+	</section>
+{/if}

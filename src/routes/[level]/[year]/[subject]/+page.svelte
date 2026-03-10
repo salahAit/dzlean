@@ -17,6 +17,7 @@
 		X
 	} from 'lucide-svelte';
 	import DynamicIcon from '$lib/components/DynamicIcon.svelte';
+	import { toggleBookmark, isBookmarked } from '$lib/stores/bookmarks.svelte';
 
 	let { data }: { data: any } = $props();
 
@@ -150,6 +151,13 @@
 <svelte:head>
 	<title>{data.subject.name_ar} - {data.year.name_ar} - SujetStore</title>
 	<meta name="description" content="فروض واختبارات {data.subject.name_ar} - {data.year.name_ar}" />
+	<meta property="og:title" content="{data.subject.name_ar} - {data.year.name_ar} - SujetStore" />
+	<meta
+		property="og:description"
+		content="فروض واختبارات {data.subject.name_ar} - {data.year
+			.name_ar} | بنك الفروض والاختبارات الجزائرية"
+	/>
+	<meta property="og:type" content="website" />
 </svelte:head>
 
 <!-- Breadcrumb -->
@@ -374,6 +382,18 @@
 		<div
 			class="mx-auto flex w-full shrink-0 items-center justify-center gap-1.5 border-t border-white/5 pt-3 sm:ms-4 sm:w-auto sm:border-t-0 sm:pt-0"
 		>
+			<button
+				onclick={() => toggleBookmark(doc.id)}
+				class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border transition-all {isBookmarked(
+					doc.id
+				)
+					? 'border-amber-500/30 bg-amber-500/10 text-amber-500 hover:bg-amber-500/20'
+					: 'text-muted-foreground border-white/10 bg-white/5 hover:bg-white/10 hover:text-amber-400'}"
+				title={isBookmarked(doc.id) ? 'إزالة من المفضلة' : 'إضافة للمفضلة'}
+			>
+				<Bookmark size={16} class={isBookmarked(doc.id) ? 'fill-current' : ''} />
+			</button>
+
 			<button
 				onclick={(e) => {
 					e.preventDefault();
