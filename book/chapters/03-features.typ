@@ -127,6 +127,11 @@ The platform supports a diverse array of question formats built natively in Svel
 7. *Short Answer:* Open text evaluated against a list of acceptable keywords.
 8. *Cloze Dropdown:* Selecting inline missing words from a dropdown menu.
 
+#figure(
+  image("../images/08-quiz-catalog.png", width: 90%),
+  caption: [The visual Quiz Catalog showing difficulty ratings and subject tags]
+)
+
 === Real-time Feedback & Scoring
 
 The quiz player provides an immersive experience:
@@ -134,6 +139,11 @@ The quiz player provides an immersive experience:
 - Immediate evaluation upon submission.
 - A beautiful, animated circular score dashboard.
 - Post-quiz review mode, showing explanations for correct and incorrect answers.
+
+#figure(
+  image("../images/09-quiz-player.png", width: 90%),
+  caption: [Interactive Quiz Player interface displaying timer and an active question]
+)
 
 == Admin Content Management System (CMS)
 
@@ -174,3 +184,13 @@ Creating interactive educational content is complex, but the SubjectStore Admin 
 - *Drag-and-Drop Question Builder:* Teachers and admins can reorder questions visually.
 - *Specialized Question Sub-forms:* Each of the 8 question types has a dedicated, tailored form (e.g., adding pairs for Matching, or defining correct sequences for Ordering).
 - *Quiz Metadata:* Set time limits, required passing scores, and toggle premium access gates.
+
+#figure(
+  image("../images/10-admin-quizzes.png", width: 90%),
+  caption: [Admin Dashboard list for managing existing quizzes, showing publish/premium states]
+)
+
+#figure(
+  image("../images/11-admin-quiz-builder.png", width: 90%),
+  caption: [Drag-and-drop question builder for authoring interactive contents directly on the platform]
+)
