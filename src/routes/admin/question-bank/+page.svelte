@@ -84,10 +84,15 @@
 		const answer = previewAnswer;
 
 		switch (previewQuestion.type) {
-			case 'mcq':
-				previewResult =
-					JSON.stringify(answer?.selectedIndexes) === JSON.stringify(qd.correctIndexes);
+			case 'mcq': {
+				const correctIdx = qd.correctIndexes
+					? qd.correctIndexes
+					: (qd.options || [])
+							.map((opt: any, i: number) => (typeof opt === 'object' && opt.isCorrect ? i : -1))
+							.filter((i: number) => i >= 0);
+				previewResult = JSON.stringify(answer?.selectedIndexes) === JSON.stringify(correctIdx);
 				break;
+			}
 			case 'true_false':
 				previewResult = answer?.value === qd.correctAnswer;
 				break;

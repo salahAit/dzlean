@@ -85,8 +85,14 @@
 	function checkAnswer(question: any, answer: any): boolean {
 		const qd = question.questionData;
 		switch (question.type) {
-			case 'mcq':
-				return JSON.stringify(answer?.selectedIndexes) === JSON.stringify(qd.correctIndexes);
+			case 'mcq': {
+				const correctIdx = qd.correctIndexes
+					? qd.correctIndexes
+					: (qd.options || [])
+							.map((opt: any, i: number) => (typeof opt === 'object' && opt.isCorrect ? i : -1))
+							.filter((i: number) => i >= 0);
+				return JSON.stringify(answer?.selectedIndexes) === JSON.stringify(correctIdx);
+			}
 			case 'true_false':
 				return answer?.value === qd.correctAnswer;
 			case 'ordering':

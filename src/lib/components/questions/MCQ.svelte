@@ -1,7 +1,20 @@
 <script lang="ts">
 	let { data, onAnswer }: { data: any; onAnswer: (answer: any) => void } = $props();
 	let selected = $state<number | null>(null);
-	let options: string[] = $derived(data.options || []);
+
+	// Normalize options: handle both {id, text, isCorrect} objects and plain strings
+	let options = $derived(
+		(data.options || []).map((opt: any) => (typeof opt === 'string' ? opt : opt.text))
+	);
+
+	// Build correctIndexes from isCorrect if not provided
+	let correctIndexes = $derived(
+		data.correctIndexes
+			? data.correctIndexes
+			: (data.options || [])
+					.map((opt: any, i: number) => (typeof opt === 'object' && opt.isCorrect ? i : -1))
+					.filter((i: number) => i >= 0)
+	);
 
 	function select(index: number) {
 		selected = index;
