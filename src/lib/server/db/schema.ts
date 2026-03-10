@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer, type AnySQLiteColumn } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, text, integer, real, index } from 'drizzle-orm/sqlite-core';
 import { sql } from 'drizzle-orm';
 
 // ============================================
@@ -77,6 +77,41 @@ export const notifications = sqliteTable('notifications', {
 });
 
 // ============================================
+// QUIZ ATTEMPTS (per user/fingerprint)
+// ============================================
+export const quizAttempts = sqliteTable(
+	'quiz_attempts',
+	{
+		id: integer('id').primaryKey({ autoIncrement: true }),
+		quizId: integer('quiz_id').notNull(),
+		fingerprint: text('fingerprint').notNull(),
+		score: integer('score').default(0),
+		totalPoints: integer('total_points').default(0),
+		percentage: real('percentage').default(0),
+		timeTaken: integer('time_taken').default(0),
+		completedAt: text('completed_at'),
+		createdAt: text('created_at').default(sql`(datetime('now'))`).notNull()
+	},
+	(table) => ({
+		quizIdx: index('idx_attempts_quiz').on(table.quizId)
+	})
+);
+
+// ============================================
+// ATTEMPT ANSWERS (detailed responses)
+// ============================================
+export const attemptAnswers = sqliteTable('attempt_answers', {
+	id: integer('id').primaryKey({ autoIncrement: true }),
+	attemptId: integer('attempt_id')
+		.references(() => quizAttempts.id, { onDelete: 'cascade' })
+		.notNull(),
+	questionId: integer('question_id').notNull(),
+	answer: text('answer').notNull(), // JSON
+	isCorrect: integer('is_correct').default(0).notNull(), // boolean mode
+	pointsEarned: integer('points_earned').default(0).notNull()
+});
+
+// ============================================
 // TYPE EXPORTS
 // ============================================
 
@@ -84,7 +119,21 @@ export type Role = 'superadmin' | 'admin' | 'editor' | 'student';
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Session = typeof sessions.$inferSelect;
+
 export type Comment = typeof comments.$inferSelect;
+export type NewComment = typeof comments.$inferInsert;
+
 export type Rating = typeof ratings.$inferSelect;
+export type NewRating = typeof ratings.$inferInsert;
+
 export type ViewStat = typeof viewStats.$inferSelect;
+export type NewViewStat = typeof viewStats.$inferInsert;
+
 export type Notification = typeof notifications.$inferSelect;
+export type NewNotification = typeof notifications.$inferInsert;
+
+export type QuizAttempt = typeof quizAttempts.$inferSelect;
+export type NewQuizAttempt = typeof quizAttempts.$inferInsert;
+
+export type AttemptAnswer = typeof attemptAnswers.$inferSelect;
+export type NewAttemptAnswer = typeof attemptAnswers.$inferInsert;

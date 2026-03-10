@@ -1,7 +1,16 @@
 <script lang="ts">
 	import '../app.css';
 	import { ModeWatcher, toggleMode } from 'mode-watcher';
-	import { Sun, Moon, BookOpen, Backpack, GraduationCap, Bookmark, BarChart3 } from 'lucide-svelte';
+	import {
+		Sun,
+		Moon,
+		BookOpen,
+		Backpack,
+		GraduationCap,
+		Bookmark,
+		BarChart3,
+		Brain
+	} from 'lucide-svelte';
 	import DynamicIcon from '$lib/components/DynamicIcon.svelte';
 	import SearchBar from '$lib/components/SearchBar.svelte';
 	import NotificationBell from '$lib/components/NotificationBell.svelte';
@@ -54,6 +63,16 @@
 						: ''}"
 				>
 					<GraduationCap size={18} /> ثانوي
+				</a>
+				<a
+					href="/quizzes"
+					class="text-muted-foreground flex items-center gap-1 font-semibold transition-colors hover:text-fuchsia-400 {$page.url.pathname.startsWith(
+						'/quizzes'
+					)
+						? 'text-fuchsia-400'
+						: ''}"
+				>
+					<Brain size={18} /> تمارين
 				</a>
 
 				<!-- Search -->

@@ -120,6 +120,53 @@ export const documents = sqliteTable('documents', {
 	updatedAt: text('updated_at')
 });
 
+/**
+ * 7. التمارين التفاعلية (Quizzes)
+ */
+export const quizzes = sqliteTable('quizzes', {
+	id: integer('id').primaryKey({ autoIncrement: true }),
+	yearSubjectId: integer('year_subject_id')
+		.references(() => yearSubjects.id)
+		.notNull(),
+	trimesterId: text('trimester_id').references(() => trimesters.id),
+
+	title: text('title').notNull(),
+	titleAr: text('title_ar'),
+	slug: text('slug').notNull().unique(),
+	description: text('description'),
+
+	difficulty: text('difficulty', { enum: ['easy', 'medium', 'hard'] }).default('medium'),
+	timeLimit: integer('time_limit').default(0), // seconds, 0 = unlimited
+	questionCount: integer('question_count').default(0),
+	passingScore: integer('passing_score').default(60), // percentage
+
+	isPremium: integer('is_premium', { mode: 'boolean' }).default(false).notNull(),
+	isPublished: integer('is_published', { mode: 'boolean' }).default(false).notNull(),
+	createdAt: text('created_at').default(sql`(datetime('now'))`),
+	updatedAt: text('updated_at')
+});
+
+/**
+ * 8. أسئلة التمارين (Quiz Questions)
+ */
+export const quizQuestions = sqliteTable('quiz_questions', {
+	id: integer('id').primaryKey({ autoIncrement: true }),
+	quizId: integer('quiz_id')
+		.references(() => quizzes.id, { onDelete: 'cascade' })
+		.notNull(),
+
+	type: text('type', {
+		enum: ['mcq', 'true_false', 'ordering', 'drag_drop', 'matching', 'fill_blank', 'short_answer', 'cloze']
+	}).notNull(),
+
+	questionText: text('question_text').notNull(),
+	questionTextAr: text('question_text_ar'),
+	questionData: text('question_data').notNull(), // JSON
+	explanation: text('explanation'),
+	points: integer('points').default(1).notNull(),
+	order: integer('order').default(0).notNull()
+});
+
 // ============================================
 // TYPE EXPORTS
 // ============================================
@@ -143,3 +190,8 @@ export type Document = typeof documents.$inferSelect;
 export type NewDocument = typeof documents.$inferInsert;
 
 export type DocumentType = 'exam' | 'test' | 'lesson' | 'summary' | 'exercise' | 'solution';
+
+export type Quiz = typeof quizzes.$inferSelect;
+export type NewQuiz = typeof quizzes.$inferInsert;
+export type QuizQuestion = typeof quizQuestions.$inferSelect;
+export type QuestionType = 'mcq' | 'true_false' | 'ordering' | 'drag_drop' | 'matching' | 'fill_blank' | 'short_answer' | 'cloze';
