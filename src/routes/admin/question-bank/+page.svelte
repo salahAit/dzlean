@@ -10,7 +10,10 @@
 		Eye,
 		X,
 		CheckCircle,
-		XCircle
+		XCircle,
+		Download,
+		Upload,
+		Copy
 	} from 'lucide-svelte';
 
 	import MCQ from '$lib/components/questions/MCQ.svelte';
@@ -55,6 +58,68 @@
 			const res = await fetch(`/api/admin/question-bank/${id}`, { method: 'DELETE' });
 			if (res.ok) await loadQuestions();
 		}
+	}
+
+	async function duplicateQuestion(q: any) {
+		try {
+			const res = await fetch('/api/admin/question-bank', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					categoryId: q.categoryId,
+					type: q.type,
+					difficulty: q.difficulty,
+					questionText: q.questionText + ' (نسخة)',
+					questionTextAr: (q.questionTextAr || '') + ' (نسخة)',
+					questionData:
+						typeof q.questionData === 'string' ? q.questionData : JSON.stringify(q.questionData),
+					explanation: q.explanation
+				})
+			});
+			if (res.ok) await loadQuestions();
+		} catch (e) {
+			console.error('Failed to duplicate', e);
+		}
+	}
+
+	async function exportQuestions() {
+		const res = await fetch('/api/admin/question-bank/export');
+		const data = await res.json();
+		const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement('a');
+		a.href = url;
+		a.download = `question-bank-export-${new Date().toISOString().split('T')[0]}.json`;
+		a.click();
+		URL.revokeObjectURL(url);
+	}
+
+	let fileInput: HTMLInputElement;
+	async function importQuestions(event: Event) {
+		const target = event.target as HTMLInputElement;
+		const file = target.files?.[0];
+		if (!file) return;
+		try {
+			const text = await file.text();
+			const data = JSON.parse(text);
+			const res = await fetch('/api/admin/question-bank/import', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(data)
+			});
+			const result = await res.json();
+			if (res.ok) {
+				alert(
+					`تم استيراد ${result.importedQuestions} سؤال و ${result.importedCategories} تصنيف بنجاح!`
+				);
+				await loadQuestions();
+			} else {
+				alert('خطأ في الاستيراد: ' + result.error);
+			}
+		} catch (e: any) {
+			alert('خطأ في قراءة الملف: ' + e.message);
+		}
+		target.value = '';
 	}
 
 	function openPreview(q: any) {
@@ -182,6 +247,25 @@
 			>
 				إدارة التصنيفات
 			</a>
+			<button
+				onclick={exportQuestions}
+				class="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-bold text-white transition-all hover:bg-white/10"
+			>
+				<Download size={16} /> تصدير
+			</button>
+			<button
+				onclick={() => fileInput?.click()}
+				class="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-bold text-white transition-all hover:bg-white/10"
+			>
+				<Upload size={16} /> استيراد
+			</button>
+			<input
+				type="file"
+				accept=".json"
+				bind:this={fileInput}
+				onchange={importQuestions}
+				class="hidden"
+			/>
 			<a
 				href="/admin/question-bank/new"
 				class="flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-bold text-white shadow-lg shadow-emerald-600/20 transition-all hover:bg-emerald-700"

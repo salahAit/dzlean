@@ -140,6 +140,13 @@ export const quizzes = sqliteTable('quizzes', {
 	questionCount: integer('question_count').default(0),
 	passingScore: integer('passing_score').default(60), // percentage
 
+	// New enhancement fields
+	shuffleOptions: integer('shuffle_options', { mode: 'boolean' }).default(false),
+	maxAttempts: integer('max_attempts').default(0), // 0 = unlimited
+	gradingMethod: text('grading_method', { enum: ['best', 'last', 'average'] }).default('best'),
+	showAnswers: integer('show_answers', { mode: 'boolean' }).default(true),
+	practiceMode: integer('practice_mode', { mode: 'boolean' }).default(false),
+
 	isPremium: integer('is_premium', { mode: 'boolean' }).default(false).notNull(),
 	isPublished: integer('is_published', { mode: 'boolean' }).default(false).notNull(),
 	createdAt: text('created_at').default(sql`(datetime('now'))`),
