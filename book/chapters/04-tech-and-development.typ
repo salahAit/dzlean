@@ -31,11 +31,11 @@ The system uses two separate SQLite databases to cleanly separate concerns:
 
 === Content Database (`content.db`) — Read-Only in Production
 
-Stores all educational content: levels, years, subjects, trimesters, and documents. This database is generated offline using the seed script and deployed as a single file. Updates are performed by replacing the entire file.
+Stores all educational content: levels, years, subjects, trimesters, documents, quizzes, and quiz questions. This database is generated offline using the seed script and deployed as a single file. Updates are performed by replacing the entire file.
 
 === Users Database (`users.db`) — Read-Write
 
-Stores admin user accounts and session data. WAL mode is enabled for concurrent read/write access:
+Stores admin user accounts, session data, user quiz attempts, ratings, comments, view statistics, and global notifications. WAL mode is enabled for concurrent read/write access:
 
 ```sql
 PRAGMA journal_mode = WAL;
@@ -53,14 +53,17 @@ sujetstore/
 │   ├── lib/
 │   │   ├── components/           # Shared Svelte components
 │   │   │   ├── ConfirmModal.svelte   # Destructive action confirmation
-│   │   │   └── DynamicIcon.svelte    # Runtime icon rendering
+│   │   │   ├── DynamicIcon.svelte    # Runtime icon rendering
+│   │   │   └── questions/            # The 8 Interactive Quiz Components
 │   │   └── server/
 │   │       └── db/               # Drizzle setup & schemas
 │   │           ├── index.ts          # DB connection (bun:sqlite)
-│   │           ├── schema-content.ts # Content tables
-│   │           └── schema-users.ts   # Auth tables
+│   │           ├── schema-content.ts # Content tables (quizzes, docs)
+│   │           └── schema.ts         # User interactions & Auth tables
 │   ├── routes/
 │   │   ├── +page.svelte              # Homepage (level cards + stats)
+│   │   ├── stats/                    # Real-time dashboard using viewStats
+│   │   ├── quizzes/                  # Interactive Quiz Web Player
 │   │   ├── [level]/
 │   │   │   ├── +page.svelte          # Year grid for a level
 │   │   │   └── [year]/
@@ -68,14 +71,15 @@ sujetstore/
 │   │   │       └── [subject]/
 │   │   │           ├── +page.svelte  # Document list (tabs + filters)
 │   │   │           └── [docSlug]/
-│   │   │               └── +page.svelte  # PDF viewer
+│   │   │               └── +page.svelte  # PDF viewer & interaction
 │   │   └── admin/
 │   │       ├── +page.svelte          # Admin dashboard
 │   │       ├── login/                # Authentication
 │   │       ├── levels/               # Level management
 │   │       ├── years/                # Year management
 │   │       ├── subjects/             # Subject management
-│   │       └── documents/            # Document management
+│   │       ├── documents/            # Document management
+│   │       └── quizzes/              # Quiz Admin Builder Forms
 │   ├── hooks.server.ts               # Auth middleware
 │   └── app.html & app.css            # Root layout & global styles
 ├── book/                             # This manual (Typst source)

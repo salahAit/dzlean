@@ -102,6 +102,39 @@ To respect student privacy while still providing useful study progress features,
 - No server-side tracking, no user accounts required, and no data is transmitted to external services.
 - Subject and Solution buttons visually reflect their visited state, enabling students to quickly identify which materials they have already reviewed.
 
+== Interactive Document Features & Social Proof
+
+Beyond static documents, SujetStore engages students with social and interactive features:
+
+- *Star Ratings:* Students can rate documents from 1 to 5 stars. High-rated documents are highlighted.
+- *Comments Section:* A seamless discussion area allows students to leave feedback or ask questions directly underneath any exam or lesson.
+- *Notifications Bell:* An intuitive navigation bell alerts users to new platform announcements or newly published high-value documents.
+- *Live View & Download Stats:* Every document tracks interaction velocity, helping surface the most popular and useful materials.
+
+== Interactive Quiz Engine
+
+A core monetizable and highly engaging feature of SujetStore is its dynamic Quiz Engine. Rather than just reading PDFs, students can test their knowledge interactively.
+
+=== Eight Powerful Question Types
+
+The platform supports a diverse array of question formats built natively in Svelte 5:
+1. *Multiple Choice (MCQ):* Single or multi-select options.
+2. *True/False:* Binary decision making.
+3. *Ordering:* HTML5 drag-and-drop to sequence historical events or logical steps.
+4. *Drag & Drop:* Categorizing items into predefined matching zones.
+5. *Matching:* Connecting pairs between two columns.
+6. *Fill in the Blank:* Replacing `___` gaps with precise text.
+7. *Short Answer:* Open text evaluated against a list of acceptable keywords.
+8. *Cloze Dropdown:* Selecting inline missing words from a dropdown menu.
+
+=== Real-time Feedback & Scoring
+
+The quiz player provides an immersive experience:
+- Live progress indicators and a countdown timer.
+- Immediate evaluation upon submission.
+- A beautiful, animated circular score dashboard.
+- Post-quiz review mode, showing explanations for correct and incorrect answers.
+
 == Admin Content Management System (CMS)
 
 The platform includes a full-featured admin panel protected by session-based authentication using `bcryptjs` password hashing.
@@ -133,3 +166,11 @@ The platform includes a full-featured admin panel protected by session-based aut
   image("../images/07-admin-levels.png", width: 90%),
   caption: [Educational levels management with icons, slugs, and edit/delete actions]
 )
+
+=== Quiz Admin Builder
+
+Creating interactive educational content is complex, but the SubjectStore Admin Panel makes it intuitive:
+
+- *Drag-and-Drop Question Builder:* Teachers and admins can reorder questions visually.
+- *Specialized Question Sub-forms:* Each of the 8 question types has a dedicated, tailored form (e.g., adding pairs for Matching, or defining correct sequences for Ordering).
+- *Quiz Metadata:* Set time limits, required passing scores, and toggle premium access gates.
