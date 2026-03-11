@@ -9,7 +9,8 @@
 		GraduationCap,
 		Bookmark,
 		BarChart3,
-		Brain
+		Brain,
+		Trophy
 	} from 'lucide-svelte';
 	import DynamicIcon from '$lib/components/DynamicIcon.svelte';
 	import SearchBar from '$lib/components/SearchBar.svelte';
@@ -73,6 +74,12 @@
 						: ''}"
 				>
 					<Brain size={18} /> تمارين
+				</a>
+				<a
+					href="/achievements"
+					class="text-muted-foreground flex items-center gap-1 font-semibold transition-colors hover:text-amber-400 {$page.url.pathname.startsWith('/achievements') ? 'text-amber-400' : ''}"
+				>
+					<Trophy size={18} /> إنجازاتي
 				</a>
 
 				<!-- Search -->
@@ -172,6 +179,13 @@
 					onclick={() => (isMobileMenuOpen = false)}
 				>
 					<GraduationCap size={20} /> التعليم الثانوي
+				</a>
+				<a
+					href="/achievements"
+					class="text-muted-foreground flex items-center gap-3 rounded-xl px-4 py-3 font-semibold transition-colors hover:bg-amber-500/10 hover:text-amber-500 dark:hover:text-amber-400 {$page.url.pathname.startsWith('/achievements') ? 'bg-amber-500/10 text-amber-500 dark:text-amber-400' : ''}"
+					onclick={() => (isMobileMenuOpen = false)}
+				>
+					<Trophy size={20} /> الإنجازات
 				</a>
 			</div>
 		{/if}

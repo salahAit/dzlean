@@ -182,8 +182,31 @@ The platform includes a full-featured admin panel protected by session-based aut
 Creating interactive educational content is complex, but the SubjectStore Admin Panel makes it intuitive:
 
 - *Drag-and-Drop Question Builder:* Teachers and admins can reorder questions visually.
-- *Specialized Question Sub-forms:* Each of the 8 question types has a dedicated, tailored form (e.g., adding pairs for Matching, or defining correct sequences for Ordering).
+- *Specialized Question Sub-forms:* Each of the 14 question types has a dedicated, tailored form (e.g., adding pairs for Matching, or defining correct sequences for Ordering).
 - *Quiz Metadata:* Set time limits, required passing scores, and toggle premium access gates.
+
+==== 14 Supported Question Types
+
+The platform supports a comprehensive set of Moodle-style question types:
+
+#table(
+  columns: (1fr, 2fr),
+  [*Type*], [*Description*],
+  [MCQ], [Multiple choice with single or multiple correct answers],
+  [True/False], [Binary choice with visual buttons],
+  [Ordering], [Native drag-and-drop to reorder items],
+  [Drag & Drop], [Categorize items by dragging into zones],
+  [Matching], [Connect pairs from two columns],
+  [Fill in the Blank], [Inline text input replacing gap placeholders],
+  [Short Answer], [Free text with keyword matching validation],
+  [Cloze], [Inline gaps with dropdown selections],
+  [Calculated], [Formula-based with randomized variables per student],
+  [Sentence Reorder], [Tap words to reassemble a correct sentence],
+  [Hotspot], [Click on the correct area of an image],
+  [Drag to Image], [Place labels on a diagram at correct positions],
+  [Matrix], [Multi-row grid selection (e.g., True/False per statement)],
+  [Essay], [Free-text with word limits and optional keyword grading],
+)
 
 #figure(
   image("../images/10-admin-quizzes.png", width: 90%),
@@ -194,3 +217,32 @@ Creating interactive educational content is complex, but the SubjectStore Admin 
   image("../images/11-admin-quiz-builder.png", width: 90%),
   caption: [Drag-and-drop question builder for authoring interactive contents directly on the platform]
 )
+
+== Gamification System
+
+To increase student engagement and motivation, SujetStore implements a complete gamification layer:
+
+=== Badges & Achievements
+
+The platform defines 8 built-in badges that students earn through quiz participation:
+
+#table(
+  columns: (1fr, 1fr, 2fr),
+  [*Badge*], [*Icon*], [*Condition*],
+  [First Quiz], [🎯], [Complete your first quiz],
+  [Quiz Explorer], [📚], [Complete 5 quizzes],
+  [Quiz Master], [🏆], [Complete 10 quizzes],
+  [Perfect Score], [⭐], [Score 100% on any quiz],
+  [Speed Demon], [⚡], [Complete a quiz in under 1 minute],
+  [Hot Streak], [🔥], [Score 80%+ on 3 consecutive quizzes],
+  [Versatile], [🎪], [Try 5 different question types],
+  [Centurion], [💯], [Accumulate 100 total points],
+)
+
+=== Points & Leaderboard
+
+- *Points are awarded* for completing quizzes, achieving perfect scores, and earning badges.
+- A *global leaderboard* ranks all users by total accumulated points.
+- A *personal history log* tracks every point transaction with timestamps.
+- The *Achievements page* (`/achievements`) displays badges, leaderboard, and point history with tab navigation.
+

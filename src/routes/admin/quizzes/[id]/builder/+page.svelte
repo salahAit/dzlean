@@ -35,7 +35,13 @@
 		{ id: 'matching', name: 'ربط', icon: 'A-B' },
 		{ id: 'fill_blank', name: 'ملء الفراغ', icon: '___' },
 		{ id: 'short_answer', name: 'إجابة قصيرة', icon: 'Aa' },
-		{ id: 'cloze', name: 'اختيار من قائمة', icon: '[v]' }
+		{ id: 'cloze', name: 'اختيار من قائمة', icon: '[v]' },
+		{ id: 'calculated', name: 'حسابي متغير', icon: 'f(x)' },
+		{ id: 'sentence_reorder', name: 'إعادة ترتيب جملة', icon: '⇄' },
+		{ id: 'hotspot', name: 'تحديد على صورة', icon: '📍' },
+		{ id: 'drag_to_image', name: 'سحب إلى صورة', icon: '🖼' },
+		{ id: 'matrix', name: 'مصفوفة', icon: '▦' },
+		{ id: 'essay', name: 'مقال / إجابة طويلة', icon: '✍' }
 	];
 
 	onMount(async () => {
@@ -90,6 +96,18 @@
 				return { acceptedKeywords: [] };
 			case 'cloze':
 				return { options: [] };
+			case 'calculated':
+				return { formula: '', displayTemplate: '', variables: [], tolerance: 0 };
+			case 'sentence_reorder':
+				return { words: [], correctOrder: [] };
+			case 'hotspot':
+				return { imageUrl: '', zones: [], correctZone: 0 };
+			case 'drag_to_image':
+				return { imageUrl: '', labels: [] };
+			case 'matrix':
+				return { statements: [], columns: ['صحيح', 'خطأ'], correctAnswers: [] };
+			case 'essay':
+				return { minWords: 0, maxWords: 0, keywords: [] };
 			default:
 				return {};
 		}

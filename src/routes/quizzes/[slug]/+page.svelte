@@ -23,6 +23,12 @@
 	import FillBlank from '$lib/components/questions/FillBlank.svelte';
 	import ShortAnswer from '$lib/components/questions/ShortAnswer.svelte';
 	import Cloze from '$lib/components/questions/Cloze.svelte';
+	import Calculated from '$lib/components/questions/Calculated.svelte';
+	import SentenceReorder from '$lib/components/questions/SentenceReorder.svelte';
+	import Hotspot from '$lib/components/questions/Hotspot.svelte';
+	import DragToImage from '$lib/components/questions/DragToImage.svelte';
+	import Matrix from '$lib/components/questions/Matrix.svelte';
+	import Essay from '$lib/components/questions/Essay.svelte';
 	import { onMount, onDestroy } from 'svelte';
 
 	let { data }: { data: any } = $props();
@@ -479,6 +485,18 @@
 						<ShortAnswer data={currentQuestion.questionData} {onAnswer} />
 					{:else if currentQuestion.type === 'cloze'}
 						<Cloze data={currentQuestion.questionData} {onAnswer} />
+					{:else if currentQuestion.type === 'calculated'}
+						<Calculated data={currentQuestion.questionData} {onAnswer} />
+					{:else if currentQuestion.type === 'sentence_reorder'}
+						<SentenceReorder data={currentQuestion.questionData} {onAnswer} />
+					{:else if currentQuestion.type === 'hotspot'}
+						<Hotspot data={currentQuestion.questionData} {onAnswer} />
+					{:else if currentQuestion.type === 'drag_to_image'}
+						<DragToImage data={currentQuestion.questionData} {onAnswer} />
+					{:else if currentQuestion.type === 'matrix'}
+						<Matrix data={currentQuestion.questionData} {onAnswer} />
+					{:else if currentQuestion.type === 'essay'}
+						<Essay data={currentQuestion.questionData} {onAnswer} />
 					{/if}
 
 					<!-- Practice Mode: Instant Check Button -->

@@ -8,6 +8,12 @@
 	import FillBlankForm from './forms/FillBlankForm.svelte';
 	import ShortAnswerForm from './forms/ShortAnswerForm.svelte';
 	import ClozeForm from './forms/ClozeForm.svelte';
+	import CalculatedForm from './forms/CalculatedForm.svelte';
+	import SentenceReorderForm from './forms/SentenceReorderForm.svelte';
+	import HotspotForm from './forms/HotspotForm.svelte';
+	import DragToImageForm from './forms/DragToImageForm.svelte';
+	import MatrixForm from './forms/MatrixForm.svelte';
+	import EssayForm from './forms/EssayForm.svelte';
 
 	let { question = $bindable(), onSave, onCancel } = $props();
 
@@ -83,6 +89,18 @@
 			<ShortAnswerForm bind:data={question.questionData} />
 		{:else if question.type === 'cloze'}
 			<ClozeForm bind:data={question.questionData} />
+		{:else if question.type === 'calculated'}
+			<CalculatedForm bind:data={question.questionData} />
+		{:else if question.type === 'sentence_reorder'}
+			<SentenceReorderForm bind:data={question.questionData} />
+		{:else if question.type === 'hotspot'}
+			<HotspotForm bind:data={question.questionData} />
+		{:else if question.type === 'drag_to_image'}
+			<DragToImageForm bind:data={question.questionData} />
+		{:else if question.type === 'matrix'}
+			<MatrixForm bind:data={question.questionData} />
+		{:else if question.type === 'essay'}
+			<EssayForm bind:data={question.questionData} />
 		{:else}
 			<p class="text-sm text-white/50">نوع غير مدعوم ({question.type})</p>
 		{/if}

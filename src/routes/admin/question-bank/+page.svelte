@@ -24,6 +24,12 @@
 	import FillBlank from '$lib/components/questions/FillBlank.svelte';
 	import ShortAnswer from '$lib/components/questions/ShortAnswer.svelte';
 	import Cloze from '$lib/components/questions/Cloze.svelte';
+	import Calculated from '$lib/components/questions/Calculated.svelte';
+	import SentenceReorder from '$lib/components/questions/SentenceReorder.svelte';
+	import Hotspot from '$lib/components/questions/Hotspot.svelte';
+	import DragToImage from '$lib/components/questions/DragToImage.svelte';
+	import Matrix from '$lib/components/questions/Matrix.svelte';
+	import Essay from '$lib/components/questions/Essay.svelte';
 
 	let questions = $state<any[]>([]);
 	let loading = $state(true);
@@ -488,6 +494,18 @@
 								: previewQuestion.questionData}
 							{onAnswer}
 						/>
+					{:else if previewQuestion.type === 'calculated'}
+						<Calculated data={typeof previewQuestion.questionData === 'string' ? JSON.parse(previewQuestion.questionData) : previewQuestion.questionData} {onAnswer} />
+					{:else if previewQuestion.type === 'sentence_reorder'}
+						<SentenceReorder data={typeof previewQuestion.questionData === 'string' ? JSON.parse(previewQuestion.questionData) : previewQuestion.questionData} {onAnswer} />
+					{:else if previewQuestion.type === 'hotspot'}
+						<Hotspot data={typeof previewQuestion.questionData === 'string' ? JSON.parse(previewQuestion.questionData) : previewQuestion.questionData} {onAnswer} />
+					{:else if previewQuestion.type === 'drag_to_image'}
+						<DragToImage data={typeof previewQuestion.questionData === 'string' ? JSON.parse(previewQuestion.questionData) : previewQuestion.questionData} {onAnswer} />
+					{:else if previewQuestion.type === 'matrix'}
+						<Matrix data={typeof previewQuestion.questionData === 'string' ? JSON.parse(previewQuestion.questionData) : previewQuestion.questionData} {onAnswer} />
+					{:else if previewQuestion.type === 'essay'}
+						<Essay data={typeof previewQuestion.questionData === 'string' ? JSON.parse(previewQuestion.questionData) : previewQuestion.questionData} {onAnswer} />
 					{:else}
 						<div class="p-8 text-center text-white/50">
 							هذا النوع من الأسئلة غير مدعوم في المعاينة التفاعلية بعد.

@@ -112,6 +112,46 @@ export const attemptAnswers = sqliteTable('attempt_answers', {
 });
 
 // ============================================
+// GAMIFICATION - BADGE DEFINITIONS
+// ============================================
+export const badgeDefinitions = sqliteTable('badge_definitions', {
+	id: integer('id').primaryKey({ autoIncrement: true }),
+	slug: text('slug').notNull().unique(),
+	name: text('name').notNull(),
+	nameAr: text('name_ar').notNull(),
+	description: text('description'),
+	icon: text('icon').notNull(), // emoji
+	color: text('color').default('#3b82f6'),
+	condition: text('condition').notNull(), // JSON: { type: 'quiz_count', threshold: 5 }
+	points: integer('points').default(10),
+	createdAt: text('created_at').default(sql`(datetime('now'))`).notNull()
+});
+
+// ============================================
+// GAMIFICATION - USER BADGES
+// ============================================
+export const userBadges = sqliteTable('user_badges', {
+	id: integer('id').primaryKey({ autoIncrement: true }),
+	fingerprint: text('fingerprint').notNull(),
+	badgeId: integer('badge_id')
+		.references(() => badgeDefinitions.id, { onDelete: 'cascade' })
+		.notNull(),
+	earnedAt: text('earned_at').default(sql`(datetime('now'))`).notNull()
+});
+
+// ============================================
+// GAMIFICATION - USER POINTS LOG
+// ============================================
+export const userPoints = sqliteTable('user_points', {
+	id: integer('id').primaryKey({ autoIncrement: true }),
+	fingerprint: text('fingerprint').notNull(),
+	points: integer('points').notNull(),
+	reason: text('reason').notNull(), // 'quiz_complete', 'perfect_score', 'badge_earned'
+	quizId: integer('quiz_id'),
+	earnedAt: text('earned_at').default(sql`(datetime('now'))`).notNull()
+});
+
+// ============================================
 // TYPE EXPORTS
 // ============================================
 

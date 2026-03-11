@@ -186,7 +186,7 @@ export const questions = sqliteTable('questions', {
 		.notNull(),
 
 	type: text('type', {
-		enum: ['mcq', 'true_false', 'ordering', 'drag_drop', 'matching', 'fill_blank', 'short_answer', 'cloze']
+		enum: ['mcq', 'true_false', 'ordering', 'drag_drop', 'matching', 'fill_blank', 'short_answer', 'cloze', 'calculated', 'sentence_reorder', 'hotspot', 'drag_to_image', 'matrix', 'essay']
 	}).notNull(),
 
 	difficulty: text('difficulty', { enum: ['easy', 'medium', 'hard'] }).default('medium'),
@@ -250,4 +250,4 @@ export type NewQuestion = typeof questions.$inferInsert;
 export type QuizQuestion = typeof quizQuestions.$inferSelect;
 export type NewQuizQuestion = typeof quizQuestions.$inferInsert;
 
-export type QuestionType = 'mcq' | 'true_false' | 'ordering' | 'drag_drop' | 'matching' | 'fill_blank' | 'short_answer' | 'cloze';
+export type QuestionType = 'mcq' | 'true_false' | 'ordering' | 'drag_drop' | 'matching' | 'fill_blank' | 'short_answer' | 'cloze' | 'calculated' | 'sentence_reorder' | 'hotspot' | 'drag_to_image' | 'matrix' | 'essay';
