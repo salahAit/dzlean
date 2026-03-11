@@ -78,7 +78,7 @@ addQ(catAlg, 'short_answer', 'hard', 'System', 'حل: س + ص = 10 و س - ص = 
 
 // فيزياء متوسط
 addQ(catElec, 'mcq', 'medium', 'Current unit', 'ما وحدة قياس شدة التيار الكهربائي ؟', { options: [{ id: "1", text: "فولط (V)", isCorrect: false }, { id: "2", text: "أمبير (A)", isCorrect: true }, { id: "3", text: "أوم (Ω)", isCorrect: false }, { id: "4", text: "واط (W)", isCorrect: false }] }, 'الأمبير (A)');
-addQ(catElec, 'matching', 'medium', 'Units', 'صل بين الكمية ووحدتها', { leftItems: [{ id: 0, text: "شدة التيار" }, { id: 1, text: "التوتر" }, { id: 2, text: "المقاومة" }, { id: 3, text: "القدرة" }], rightItems: [{ id: 0, text: "أمبير" }, { id: 1, text: "فولط" }, { id: 2, text: "أوم" }, { id: 3, text: "واط" }] }, 'التيار↔أمبير، التوتر↔فولط، المقاومة↔أوم، القدرة↔واط');
+addQ(catElec, 'matching', 'medium', 'Units', 'صل بين الكمية ووحدتها', { pairs: [{ left: "شدة التيار", right: "أمبير" }, { left: "التوتر", right: "فولط" }, { left: "المقاومة", right: "أوم" }, { left: "القدرة", right: "واط" }] }, 'التيار↔أمبير، التوتر↔فولط، المقاومة↔أوم، القدرة↔واط');
 addQ(catElec, 'true_false', 'easy', 'Series', 'في التسلسل، شدة التيار ثابتة في جميع النقاط', { correctAnswer: true }, 'التيار نفسه يمر في جميع العناصر');
 addQ(catElec, 'drag_drop', 'medium', 'Classify', 'صنّف إلى موصلات وعوازل', { items: [{ text: "النحاس", category: "موصلات" }, { text: "الخشب", category: "عوازل" }, { text: "الحديد", category: "موصلات" }, { text: "البلاستيك", category: "عوازل" }, { text: "الألمنيوم", category: "موصلات" }, { text: "المطاط", category: "عوازل" }], categories: ["موصلات", "عوازل"] }, 'المعادن موصلات، الخشب والبلاستيك عوازل');
 
@@ -94,7 +94,7 @@ addQ(catAnal, 'fill_blank', 'hard', 'Integral', 'أكمل: ∫2س dس = ___ + C'
 // فيزياء ثانوي
 addQ(catMech, 'mcq', 'hard', 'Newton', 'ينص قانون نيوتن الثاني على:', { options: [{ id: "1", text: "F = m × a", isCorrect: true }, { id: "2", text: "F = m × v", isCorrect: false }, { id: "3", text: "E = m × c²", isCorrect: false }, { id: "4", text: "P = m × g", isCorrect: false }] }, 'F = m·a');
 addQ(catMech, 'ordering', 'medium', 'Planets', 'رتّب الكواكب حسب بعدها عن الشمس', { items: ["المريخ", "الزهرة", "عطارد", "الأرض"], correctOrder: [2, 1, 3, 0] }, 'عطارد ← الزهرة ← الأرض ← المريخ');
-addQ(catMech, 'matching', 'hard', 'Formulas', 'صل بين الكمية والعلاقة', { leftItems: [{ id: 0, text: "السرعة" }, { id: 1, text: "التسارع" }, { id: 2, text: "الطاقة الحركية" }, { id: 3, text: "الشغل" }], rightItems: [{ id: 0, text: "v = d/t" }, { id: 1, text: "a = Δv/Δt" }, { id: 2, text: "Ec = ½mv²" }, { id: 3, text: "W = F×d" }] }, 'v=d/t, a=Δv/Δt, Ec=½mv², W=F×d');
+addQ(catMech, 'matching', 'hard', 'Formulas', 'صل بين الكمية والعلاقة', { pairs: [{ left: "السرعة", right: "v = d/t" }, { left: "التسارع", right: "a = Δv/Δt" }, { left: "الطاقة الحركية", right: "Ec = ½mv²" }, { left: "الشغل", right: "W = F×d" }] }, 'v=d/t, a=Δv/Δt, Ec=½mv², W=F×d');
 
 // علوم طبيعية ثانوي
 addQ(catBio, 'mcq', 'medium', 'Cell', 'ما العضية المسؤولة عن التنفس الخلوي ؟', { options: [{ id: "1", text: "النواة", isCorrect: false }, { id: "2", text: "الميتوكوندريا", isCorrect: true }, { id: "3", text: "الريبوسوم", isCorrect: false }, { id: "4", text: "جهاز غولجي", isCorrect: false }] }, 'الميتوكوندريا = محطة الطاقة');
@@ -108,8 +108,8 @@ addQ(catMaster, 'true_false', 'easy', 'TF', 'الهمزة في كلمة "سأل"
 addQ(catMaster, 'fill_blank', 'easy', 'Fill', 'أكمل الفراغ: 45 + ___ = 100', { sentence: "45 + ___ = 100", answers: ["55"] }, '100 - 45 = 55');
 addQ(catMaster, 'drag_drop', 'hard', 'Drag', 'صنّف إلى حقيقيات وبدائيات النوى (سحب وإفلات للتصنيف)', { items: [{ text: "البكتيريا", category: "بدائيات النوى" }, { text: "الفطريات", category: "حقيقيات النوى" }], categories: ["حقيقيات النوى", "بدائيات النوى"] }, 'البكتيريا بدائية');
 addQ(catMaster, 'ordering', 'easy', 'Order', 'رتّب الأعداد تصاعدياً (ترتيب)', { items: ["125", "89", "201", "56"], correctOrder: [3, 1, 0, 2] }, '56 ← 89 ← 125 ← 201');
-addQ(catMaster, 'matching', 'medium', 'Match', 'اربط الكلمة بمرادفها (سحب وإفلات للمطابقة)', { leftItems: [{ id: 0, text: "سعيد" }, { id: 1, text: "سريع" }], rightItems: [{ id: 0, text: "مسرور" }, { id: 1, text: "عاجل" }] }, 'سعيد=مسرور، سريع=عاجل');
-addQ(catMaster, 'short_answer', 'medium', 'Short', 'من هو مكتشف الجاذبية؟ (إجابة قصيرة)', { answers: ["نيوتن", "إسحاق نيوتن"] }, 'العالم الإنجليزي إسحاق نيوتن');
+addQ(catMaster, 'matching', 'medium', 'Match', 'اربط الكلمة بمرادفها (سحب وإفلات للمطابقة)', { pairs: [{ left: "سعيد", right: "مسرور" }, { left: "سريع", right: "عاجل" }] }, 'سعيد=مسرور، سريع=عاجل');
+addQ(catMaster, 'short_answer', 'medium', 'Short', 'من هو مكتشف الجاذبية؟ (إجابة قصيرة)', { keywords: ["نيوتن", "إسحاق نيوتن"], minKeywords: 1 }, 'العالم الإنجليزي إسحاق نيوتن');
 addQ(catMaster, 'cloze', 'medium', 'Cloze', 'اختر الكلمة المناسبة (قائمة منسدلة): ذهب المعلمون ___ المدرسة', { sentence: "ذهب المعلمون ___ المدرسة", options: ["إلى", "على", "في"], correctIndex: 0 }, 'حرف الجر "إلى" للوجهة');
 addQ(catMaster, 'calculated', 'hard', 'Calc', 'احسب محيط مستطيل طوله {a} وعرضه {b} (سؤال رياضي متغير الأرقام عشوائياً)', { formula: "({a} + {b}) * 2", displayTemplate: "الطول = {a} ، العرض = {b}", variables: [{ name: "a", min: 10, max: 20 }, { name: "b", min: 1, max: 9 }], tolerance: 0 }, 'المحيط = (الطول + العرض) × 2');
 addQ(catMaster, 'sentence_reorder', 'easy', 'Sentence', 'رتب الكلمات لتكوين جملة مفيدة (سحب الكلمات لتكوين جملة):', { words: ["التلميذُ", "الدرسَ", "كتبَ"], correctOrder: [2, 0, 1] }, 'كتب التلميذ الدرس');

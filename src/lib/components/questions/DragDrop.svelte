@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { X } from 'lucide-svelte';
 	let { data, onAnswer }: { data: any; onAnswer: (answer: any) => void } = $props();
 	let categories: string[] = $derived(data.categories || []);
 	let items: { text: string; category: number }[] = $derived(data.items || []);
@@ -66,11 +67,29 @@
 				<div class="flex flex-wrap gap-2">
 					{#each items.filter((item) => assignments[item.text] === ci) as assigned}
 						<span
-							class="rounded-lg bg-blue-500/15 px-3 py-1.5 text-sm font-semibold text-blue-600 dark:text-blue-300"
+							class="group flex items-center gap-2 rounded-lg bg-primary/10 px-3 py-1.5 text-sm font-semibold text-primary transition-colors hover:bg-destructive/10 dark:hover:bg-destructive/20"
 						>
 							{assigned.text}
+							<button
+								type="button"
+								class="text-primary/50 transition-colors hover:text-destructive group-hover:text-destructive"
+								onclick={() => {
+									assignments = { ...assignments, [assigned.text]: null };
+									onAnswer({ assignments: { ...assignments } });
+								}}
+								title="تراجع (إزالة)"
+							>
+								<X size={14} strokeWidth={3} />
+							</button>
 						</span>
 					{/each}
+					{#if items.filter((item) => assignments[item.text] === ci).length === 0}
+						<div
+							class="flex h-10 w-full items-center justify-center rounded-lg border-2 border-dashed border-border/40 bg-background/20 text-xs text-muted-foreground/60 transition-colors"
+						>
+							اسحب عنصراً هنا...
+						</div>
+					{/if}
 				</div>
 			</div>
 		{/each}

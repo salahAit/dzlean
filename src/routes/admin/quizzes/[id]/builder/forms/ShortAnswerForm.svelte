@@ -3,14 +3,14 @@
 
 	let { data = $bindable() } = $props();
 
-	if (!data.acceptedKeywords) data.acceptedKeywords = [];
+	if (!data.keywords) data.keywords = [];
 
 	function addKeyword() {
-		data.acceptedKeywords = [...data.acceptedKeywords, ''];
+		data.keywords = [...data.keywords, ''];
 	}
 
 	function removeKeyword(idx: number) {
-		data.acceptedKeywords = data.acceptedKeywords.filter((_: any, i: number) => i !== idx);
+		data.keywords = data.keywords.filter((_: any, i: number) => i !== idx);
 	}
 </script>
 
@@ -21,12 +21,12 @@
 	</p>
 
 	<div class="space-y-3">
-		{#each data.acceptedKeywords as keyword, i}
+		{#each data.keywords as keyword, i}
 			<div class="flex items-center gap-2">
 				<span class="text-blue-500/50">كلمة مقبولة / تطابق</span>
 				<input
 					type="text"
-					bind:value={data.acceptedKeywords[i]}
+					bind:value={data.keywords[i]}
 					placeholder="مثال: ثورة التحرير"
 					class="flex-1 rounded-xl border border-border bg-card text-card-foreground shadow-sm p-2 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary"
 				/>
