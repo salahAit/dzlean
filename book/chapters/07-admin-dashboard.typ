@@ -21,7 +21,7 @@ The administration panel provides full CRUD (Create, Read, Update, Delete) capab
 *Key UI Features:*
 - *Modal-Based Editing:* All add/edit operations use floating Shadcn-Svelte modals for fast interaction without triggering full page reloads.
 - *Confirmation Dialogs:* Destructive operations require explicit confirmation through a `ConfirmModal` component to prevent accidental data loss.
-- *File Linking:* Documents can be linked directly via direct URL, ensuring the platform database remains lightweight.
+- *Secondary Stream Awareness:* The CMS is fully aware of the Algerian stream system. When uploading documents or quizzes for secondary school levels, the system prompts for stream scoping (e.g., scoping a Physics exam specifically to the _Mathematical Technical_ track) to ensure accurate content delivery without subject name collisions.
 
 == The Interactive Quiz Builder
 

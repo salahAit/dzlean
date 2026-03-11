@@ -45,6 +45,23 @@ PRAGMA synchronous = NORMAL;
 
 This ensures that high-volume writes (like tracking points and attempts) never block reads on the content database.
 
+== The Exam Paper Coding System
+
+A core feature of SujetStore is its adherence to the *Algerian Exam Coding System*. This handles the complex relationship between educational streams (شعب) and subject papers.
+
+=== The Golden Rule
+The system follows a strict principle: _"If two streams take the exact same exam paper, they share a single Exam Code."_
+
+- *Shared Papers:* If "Physics" for the _Experimental Sciences_ stream is identical to "Physics" for the _Math_ stream, both map to a single `PHY-SCI` code.
+- *Unique Papers:* If "Math" for _Math_ stream is different from "Math" for _Literary_ stream, they receive separate `MAT-MTM` and `MAT-LIT` codes respectively.
+
+=== Relational Mapping
+The SQLite schema implements this through three dedicated tables:
+- `streams`: Defines secondary education tracks (e.g., GEN, SE, MATH).
+- `level_streams`: Maps specific years (e.g., 2AS, 3AS) to available streams.
+- `stream_subjects`: Maps streams to their respective exam-code subjects and trimesters, ensuring students only see relevant materials for their track.
+
+
 == Development Workflow
 
 ```bash
