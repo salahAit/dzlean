@@ -29,7 +29,9 @@
 	import DragToImage from '$lib/components/questions/DragToImage.svelte';
 	import Matrix from '$lib/components/questions/Matrix.svelte';
 	import Essay from '$lib/components/questions/Essay.svelte';
+	import ShareModal from '$lib/components/ShareModal.svelte';
 	import { onMount, onDestroy } from 'svelte';
+	import { page } from '$app/state';
 
 	let { data }: { data: any } = $props();
 
@@ -64,7 +66,7 @@
 	let timerInterval: any;
 	let autoSubmitted = $state(false);
 	let showReview = $state(false);
-	let copied = $state(false);
+	let isShareModalOpen = $state(false);
 
 	// Practice mode state
 	let practiceChecked = $state<Record<number, boolean>>({});
@@ -311,14 +313,8 @@
 		}, 1000);
 	}
 
-	function copyLink() {
-		try {
-			navigator.clipboard.writeText(window.location.href);
-			copied = true;
-			setTimeout(() => (copied = false), 2000);
-		} catch (err) {
-			console.error('Failed to copy link:', err);
-		}
+	function openShare() {
+		isShareModalOpen = true;
 	}
 </script>
 
@@ -378,18 +374,11 @@
 
 			<!-- Share -->
 			<button
-				onclick={copyLink}
+				onclick={openShare}
 				class="text-muted-foreground hover:text-foreground relative mt-8 inline-flex items-center gap-2 text-sm transition-colors"
 			>
-				{#if copied}
-					<span
-						class="animate-in fade-in slide-in-from-bottom-2 absolute -top-10 left-1/2 -translate-x-1/2 rounded-lg bg-emerald-500 px-3 py-1.5 text-xs font-bold whitespace-nowrap text-white shadow-lg"
-					>
-						تم النسخ بنجاح!
-					</span>
-				{/if}
 				<Share2 size={16} />
-				{copied ? 'تم النسخ!' : 'نسخ رابط التمرين'}
+				مشاركة الرابط
 			</button>
 		</div>
 	{:else if !submitted}
@@ -743,18 +732,11 @@
 					<RotateCcw size={18} /> إعادة المحاولة
 				</button>
 				<button
-					onclick={copyLink}
+					onclick={openShare}
 					class="relative flex items-center gap-2 rounded-xl border border-black/10 bg-black/5 px-6 py-3 font-bold transition-all hover:bg-black/10 dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10"
 				>
-					{#if copied}
-						<span
-							class="animate-in fade-in slide-in-from-bottom-2 absolute -top-12 left-1/2 -translate-x-1/2 rounded-lg bg-emerald-500 px-3 py-1.5 text-xs font-bold whitespace-nowrap text-white shadow-lg"
-						>
-							تم النسخ بنجاح!
-						</span>
-					{/if}
 					<Share2 size={18} />
-					{copied ? 'تم النسخ!' : 'مشاركة'}
+					مشاركة التقرير
 				</button>
 				<a
 					href="/quizzes"
@@ -765,4 +747,10 @@
 			</div>
 		</div>
 	{/if}
+
+	<ShareModal
+		bind:isOpen={isShareModalOpen}
+		url={page.url.href}
+		title={quiz.titleAr || quiz.title}
+	/>
 </div>
