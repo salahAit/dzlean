@@ -5,9 +5,14 @@
 
 	// Stream colors for visual distinction
 	const streamColors: Record<string, string> = {
-		'TCST': '#10b981', 'TCL': '#8b5cf6',
-		'SE': '#3b82f6', 'MATH': '#ef4444', 'TM': '#f59e0b',
-		'GE': '#0d9488', 'LP': '#7c3aed', 'LE': '#ec4899'
+		TCST: '#10b981',
+		TCL: '#8b5cf6',
+		SE: '#3b82f6',
+		MATH: '#ef4444',
+		TM: '#f59e0b',
+		GE: '#0d9488',
+		LP: '#7c3aed',
+		LE: '#ec4899'
 	};
 
 	function getStreamColor(id: string) {
@@ -16,9 +21,14 @@
 
 	// Stream icons
 	const streamIcons: Record<string, string> = {
-		'TCST': 'FlaskConical', 'TCL': 'BookOpen',
-		'SE': 'Microscope', 'MATH': 'Calculator', 'TM': 'Wrench',
-		'GE': 'TrendingUp', 'LP': 'Pen', 'LE': 'Languages'
+		TCST: 'FlaskConical',
+		TCL: 'BookOpen',
+		SE: 'Microscope',
+		MATH: 'Calculator',
+		TM: 'Wrench',
+		GE: 'TrendingUp',
+		LP: 'Pen',
+		LE: 'Languages'
 	};
 
 	function getStreamIcon(id: string) {
@@ -63,34 +73,42 @@
 	<section class="py-12 lg:py-16">
 		<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 			<h2 class="mb-3 text-center text-2xl font-bold">اختر الشعبة</h2>
-			<p class="text-muted-foreground mb-8 text-center text-sm">اختر شعبتك لعرض المواد والامتحانات الخاصة بها</p>
+			<p class="text-muted-foreground mb-8 text-center text-sm">
+				اختر شعبتك لعرض المواد والامتحانات الخاصة بها
+			</p>
 
 			<div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
 				{#each data.streams as stream}
 					<a
 						href="/{data.level.slug}/{data.year.slug}/{stream.id.toLowerCase()}"
-						class="subject-card group block"
+						class="glass-card group block border-black/5 dark:border-white/10"
 					>
 						<div class="flex items-center gap-4">
 							<!-- Stream Icon -->
 							<div
 								class="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-xl"
-								style="background: {getStreamColor(stream.id)}20; border: 1px solid {getStreamColor(stream.id)}40; color: {getStreamColor(stream.id)}"
+								style="background: {getStreamColor(stream.id)}20; border: 1px solid {getStreamColor(
+									stream.id
+								)}40; color: {getStreamColor(stream.id)}"
 							>
 								<DynamicIcon name={getStreamIcon(stream.id)} size={28} />
 							</div>
 
 							<div class="min-w-0 flex-1">
-								<h3 class="group-hover:text-primary truncate text-lg font-bold transition-colors">
-									{stream.name_ar}
-								</h3>
+								<div class="flex items-center justify-between gap-2">
+									<h3 class="group-hover:text-primary truncate text-lg font-bold transition-colors">
+										{stream.name_ar}
+									</h3>
+									<div
+										class="flex items-center gap-1.5 rounded-lg bg-black/5 px-2 py-1 dark:bg-white/5"
+									>
+										<span class="text-sm font-bold" style="color: {getStreamColor(stream.id)}"
+											>{stream.subjectCount}</span
+										>
+										<span class="text-muted-foreground text-[10px]">مادة</span>
+									</div>
+								</div>
 								<p class="text-muted-foreground text-sm">{stream.name_fr}</p>
-							</div>
-
-							<!-- Subject count -->
-							<div class="flex-shrink-0 text-center">
-								<div class="text-lg font-bold" style="color: {getStreamColor(stream.id)}">{stream.subjectCount}</div>
-								<div class="text-muted-foreground text-xs">مادة</div>
 							</div>
 						</div>
 					</a>
@@ -108,7 +126,7 @@
 				{#each data.subjects as subject}
 					<a
 						href="/{data.level.slug}/{data.year.slug}/{subject.slug}"
-						class="subject-card group block"
+						class="glass-card group block border-black/5 dark:border-white/10"
 					>
 						<div class="flex items-center gap-4">
 							<!-- Subject Icon -->
@@ -120,16 +138,20 @@
 							</div>
 
 							<div class="min-w-0 flex-1">
-								<h3 class="group-hover:text-primary truncate text-lg font-bold transition-colors">
-									{subject.name_ar}
-								</h3>
+								<div class="flex items-center justify-between gap-2">
+									<h3 class="group-hover:text-primary truncate text-lg font-bold transition-colors">
+										{subject.name_ar}
+									</h3>
+									<div
+										class="flex items-center gap-1.5 rounded-lg bg-black/5 px-2 py-1 dark:bg-white/5"
+									>
+										<span class="text-sm font-bold" style="color: {subject.color}"
+											>{subject.docCount}</span
+										>
+										<span class="text-muted-foreground text-[10px]">وثيقة</span>
+									</div>
+								</div>
 								<p class="text-muted-foreground text-sm">{subject.name_fr}</p>
-							</div>
-
-							<!-- Doc count -->
-							<div class="flex-shrink-0 text-center">
-								<div class="text-lg font-bold" style="color: {subject.color}">{subject.docCount}</div>
-								<div class="text-muted-foreground text-xs">وثيقة</div>
 							</div>
 						</div>
 

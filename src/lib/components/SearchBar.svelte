@@ -134,12 +134,23 @@
 						onclick={() => {
 							query = '';
 							results = [];
+							inputRef?.focus();
 						}}
-						class="text-muted-foreground hover:text-foreground"
+						class="text-muted-foreground hover:text-foreground p-1 transition-colors"
+						title="مسح البحث"
 					>
 						<X size={18} />
 					</button>
 				{/if}
+
+				<!-- Persistent Close Button -->
+				<button
+					onclick={close}
+					class="flex h-8 w-8 items-center justify-center rounded-lg border border-red-500/20 bg-red-500/10 transition-colors hover:bg-red-500/20"
+					title="إغلاق (Esc)"
+				>
+					<X size={18} class="text-red-500" />
+				</button>
 			</div>
 
 			<!-- Results -->

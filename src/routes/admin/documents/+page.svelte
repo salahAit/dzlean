@@ -26,7 +26,9 @@
 	function getYearSubjectLabel(id: number) {
 		const ys = data.yearSubjects.find((y: any) => y.id === id);
 		if (!ys) return 'غير معروف';
-		return ys.streamAr ? `${ys.yearAr} - ${ys.streamAr} - ${ys.subjectAr}` : `${ys.yearAr} - ${ys.subjectAr}`;
+		return ys.streamAr
+			? `${ys.yearAr} - ${ys.streamAr} - ${ys.subjectAr}`
+			: `${ys.yearAr} - ${ys.subjectAr}`;
 	}
 
 	function openEdit(item: any) {
@@ -81,10 +83,12 @@
 	</div>
 {/if}
 
-<div class="glass-card overflow-hidden rounded-2xl border border-white/10">
+<div class="glass-card overflow-hidden rounded-2xl border border-black/5 dark:border-white/10">
 	<div class="overflow-x-auto">
 		<table class="w-full text-right text-sm">
-			<thead class="border-b border-white/10 bg-white/5 text-xs text-white/50">
+			<thead
+				class="text-muted-foreground border-b border-black/5 bg-black/5 text-xs dark:border-white/10 dark:bg-white/5"
+			>
 				<tr>
 					<th class="px-6 py-4 font-medium tracking-wider uppercase">ID</th>
 					<th class="px-6 py-4 font-medium tracking-wider uppercase">العنوان</th>
@@ -94,16 +98,17 @@
 					<th class="px-6 py-4 text-center font-medium tracking-wider uppercase">إجراءات</th>
 				</tr>
 			</thead>
-			<tbody class="divide-y divide-white/10">
+			<tbody class="divide-y divide-black/5 dark:divide-white/10">
 				{#each data.documents as doc}
 					{@const itemData = data.yearSubjects.find((y: any) => y.id === doc.yearSubjectId)}
-					<tr class="transition-colors hover:bg-white/5">
-						<td class="px-6 py-4 font-medium whitespace-nowrap text-white/70" dir="ltr">{doc.id}</td
+					<tr class="transition-colors hover:bg-black/5 dark:hover:bg-white/5">
+						<td class="text-muted-foreground px-6 py-4 font-medium whitespace-nowrap" dir="ltr"
+							>{doc.id}</td
 						>
 						<td class="max-w-[200px] truncate px-6 py-4 font-bold" title={doc.titleAr || doc.title}
 							>{doc.titleAr || doc.title}</td
 						>
-						<td class="shrink-0 px-6 py-4 text-xs whitespace-nowrap text-white/80">
+						<td class="text-muted-foreground shrink-0 px-6 py-4 text-xs whitespace-nowrap">
 							{getYearSubjectLabel(doc.yearSubjectId)}
 						</td>
 						<td class="px-6 py-4 whitespace-nowrap">
@@ -258,7 +263,9 @@
 						>
 							{#each data.yearSubjects as ys}
 								<option value={ys.id}>
-									{ys.streamAr ? `${ys.yearAr} - ${ys.streamAr} - ${ys.subjectAr}` : `${ys.yearAr} - ${ys.subjectAr}`}
+									{ys.streamAr
+										? `${ys.yearAr} - ${ys.streamAr} - ${ys.subjectAr}`
+										: `${ys.yearAr} - ${ys.subjectAr}`}
 								</option>
 							{/each}
 						</select>
@@ -433,7 +440,9 @@
 						>
 							{#each data.yearSubjects as ys}
 								<option value={ys.id}>
-									{ys.streamAr ? `${ys.yearAr} - ${ys.streamAr} - ${ys.subjectAr}` : `${ys.yearAr} - ${ys.subjectAr}`}
+									{ys.streamAr
+										? `${ys.yearAr} - ${ys.streamAr} - ${ys.subjectAr}`
+										: `${ys.yearAr} - ${ys.subjectAr}`}
 								</option>
 							{/each}
 						</select>
