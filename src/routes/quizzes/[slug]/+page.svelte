@@ -64,6 +64,7 @@
 	let timerInterval: any;
 	let autoSubmitted = $state(false);
 	let showReview = $state(false);
+	let copied = $state(false);
 
 	// Practice mode state
 	let practiceChecked = $state<Record<number, boolean>>({});
@@ -311,7 +312,13 @@
 	}
 
 	function copyLink() {
-		navigator.clipboard.writeText(window.location.href);
+		try {
+			navigator.clipboard.writeText(window.location.href);
+			copied = true;
+			setTimeout(() => (copied = false), 2000);
+		} catch (err) {
+			console.error('Failed to copy link:', err);
+		}
 	}
 </script>
 
@@ -372,9 +379,17 @@
 			<!-- Share -->
 			<button
 				onclick={copyLink}
-				class="text-muted-foreground hover:text-foreground mt-8 inline-flex items-center gap-2 text-sm"
+				class="text-muted-foreground hover:text-foreground relative mt-8 inline-flex items-center gap-2 text-sm transition-colors"
 			>
-				<Share2 size={16} /> نسخ رابط التمرين
+				{#if copied}
+					<span
+						class="animate-in fade-in slide-in-from-bottom-2 absolute -top-10 left-1/2 -translate-x-1/2 rounded-lg bg-emerald-500 px-3 py-1.5 text-xs font-bold whitespace-nowrap text-white shadow-lg"
+					>
+						تم النسخ بنجاح!
+					</span>
+				{/if}
+				<Share2 size={16} />
+				{copied ? 'تم النسخ!' : 'نسخ رابط التمرين'}
 			</button>
 		</div>
 	{:else if !submitted}
@@ -729,9 +744,17 @@
 				</button>
 				<button
 					onclick={copyLink}
-					class="flex items-center gap-2 rounded-xl border border-black/10 bg-black/5 px-6 py-3 font-bold transition-all hover:bg-black/10 dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10"
+					class="relative flex items-center gap-2 rounded-xl border border-black/10 bg-black/5 px-6 py-3 font-bold transition-all hover:bg-black/10 dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10"
 				>
-					<Share2 size={18} /> مشاركة
+					{#if copied}
+						<span
+							class="animate-in fade-in slide-in-from-bottom-2 absolute -top-12 left-1/2 -translate-x-1/2 rounded-lg bg-emerald-500 px-3 py-1.5 text-xs font-bold whitespace-nowrap text-white shadow-lg"
+						>
+							تم النسخ بنجاح!
+						</span>
+					{/if}
+					<Share2 size={18} />
+					{copied ? 'تم النسخ!' : 'مشاركة'}
 				</button>
 				<a
 					href="/quizzes"

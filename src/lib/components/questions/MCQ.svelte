@@ -37,7 +37,7 @@
 					? 'bg-blue-500 text-white'
 					: 'text-muted-foreground bg-muted'}"
 			>
-				{String.fromCharCode(1571 + i)}
+				{['أ', 'ب', 'ج', 'د', 'هـ', 'و', 'ز', 'ح'][i] || i + 1}
 			</span>
 			<span class="flex-1 font-medium">{option}</span>
 		</button>

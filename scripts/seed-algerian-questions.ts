@@ -119,12 +119,12 @@ function createQuiz(ysId: number, tId: string, title: string, tAr: string, slug:
     console.log(`✅ ${tAr} (${qs.length} qs)`);
 }
 
-const pMath = findYS('primary', 'math');
-const mMath = findYS('middle', 'math');
-const mPhys = findYS('middle', 'physics');
-const sMath = findYS('secondary', 'math');
-const sPhys = findYS('secondary', 'physics');
-const sSci = findYS('secondary', 'science');
+const pMath = findYS('primaire', 'MAT-B');
+const mMath = findYS('moyen', 'MAT-B');
+const mPhys = findYS('moyen', 'PHY-B');
+const sMath = findYS('secondaire', 'MAT-SE');
+const sPhys = findYS('secondaire', 'PHY-SE');
+const sSci = findYS('secondaire', 'SCI-SE');
 
 if (pMath) createQuiz(pMath, 't1', 'Primary Math', 'تمرين رياضيات - ابتدائي', 'primary-math-quiz', 'تمرين شامل في الحساب والهندسة', 'easy', 600, [catArith, catGeom]);
 if (mMath) createQuiz(mMath, 't1', 'Middle Algebra', 'تمرين الجبر - متوسط', 'middle-algebra-quiz', 'تمرين في المعادلات والتحليل', 'medium', 900, [catAlg]);

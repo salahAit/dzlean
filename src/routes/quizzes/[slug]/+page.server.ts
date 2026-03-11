@@ -53,12 +53,16 @@ export async function load({ params }) {
         .where(eq(quizQuestions.quizId, quizRow.quiz.id))
         .orderBy(asc(quizQuestions.order));
 
-    // Parse questionData JSON
+    // Parse questionData JSON (only if it's still a string, though Drizzle should handle it)
     const parsedQuestions = rawQuestions.map((q) => {
-        let parsedData = {};
-        try {
-            parsedData = JSON.parse(q.questionData as string);
-        } catch (e) { }
+        let parsedData = q.questionData;
+        if (typeof q.questionData === 'string') {
+            try {
+                parsedData = JSON.parse(q.questionData);
+            } catch (e) {
+                console.error('Failed to parse questionData:', e);
+            }
+        }
 
         return {
             ...q,
