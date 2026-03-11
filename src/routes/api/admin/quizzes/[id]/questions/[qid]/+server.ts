@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { contentDatabase } from '$lib/server/db';
-import { quizQuestions, quizzes } from '$lib/server/db/schema-content';
-import { eq, and, sql } from 'drizzle-orm';
+import { quizQuestions, quizzes, questions } from '$lib/server/db/schema-content';
+import { eq, sql } from 'drizzle-orm';
 
 // Update individual question linkage (points and order)
 export async function PUT({ params, request, locals }) {
@@ -13,13 +13,34 @@ export async function PUT({ params, request, locals }) {
     const data = await request.json();
 
     try {
-        await contentDatabase
-            .update(quizQuestions)
-            .set({
-                points: data.points,
-                order: data.order
-            })
-            .where(eq(quizQuestions.id, linkId));
+        // First, get the link to find the actual question ID
+        const link = await contentDatabase.select().from(quizQuestions).where(eq(quizQuestions.id, linkId)).get();
+        if (!link) return json({ error: 'Question link not found' }, { status: 404 });
+
+        await contentDatabase.transaction(async (tx) => {
+            // Update the link (points, order)
+            await tx
+                .update(quizQuestions)
+                .set({
+                    points: data.points !== undefined ? data.points : link.points,
+                    order: data.order !== undefined ? data.order : link.order
+                })
+                .where(eq(quizQuestions.id, linkId));
+
+            // Update the actual question content
+            await tx
+                .update(questions)
+                .set({
+                    type: data.type,
+                    difficulty: data.difficulty,
+                    questionText: data.questionText,
+                    questionTextAr: data.questionTextAr || null,
+                    questionData: data.questionData,
+                    explanation: data.explanation || null,
+                    updatedAt: new Date().toISOString()
+                })
+                .where(eq(questions.id, link.questionId));
+        });
 
         return json({ success: true });
     } catch (error) {

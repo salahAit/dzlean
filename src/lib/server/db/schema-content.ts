@@ -1,4 +1,10 @@
-import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
+import {
+	sqliteTable,
+	text,
+	integer,
+	primaryKey,
+	customType
+} from 'drizzle-orm/sqlite-core';
 import { sql } from 'drizzle-orm';
 
 // ============================================
@@ -241,7 +247,24 @@ export const questions = sqliteTable('questions', {
 
 	questionText: text('question_text').notNull(),
 	questionTextAr: text('question_text_ar'),
-	questionData: text('question_data').notNull(), // JSON payload specific to the type
+	questionData: customType<{ data: any; driverData: string }>({
+		dataType() {
+			return 'text'; // SQLite stores JSON in text columns
+		},
+		toDriver(val: any): string {
+			return JSON.stringify(val);
+		},
+		fromDriver(value: unknown): any {
+			if (typeof value === 'string') {
+				try {
+					return JSON.parse(value);
+				} catch (e) {
+					return value;
+				}
+			}
+			return value;
+		}
+	})('question_data').notNull(),
 	explanation: text('explanation'),
 
 	createdAt: text('created_at').default(sql`(datetime('now'))`),

@@ -13,6 +13,7 @@ export const load: PageServerLoad = async () => {
             id: contentSchema.yearSubjects.id,
             yearAr: contentSchema.years.nameAr,
             subjectAr: contentSchema.subjects.nameAr,
+            streamAr: contentSchema.streams.nameAr,
             yearSlug: contentSchema.years.slug,
             subjectSlug: contentSchema.subjects.slug,
             levelSlug: contentSchema.educationLevels.slug
@@ -21,6 +22,7 @@ export const load: PageServerLoad = async () => {
         .innerJoin(contentSchema.years, eq(contentSchema.yearSubjects.yearId, contentSchema.years.id))
         .innerJoin(contentSchema.educationLevels, eq(contentSchema.years.levelId, contentSchema.educationLevels.id))
         .innerJoin(contentSchema.subjects, eq(contentSchema.yearSubjects.subjectId, contentSchema.subjects.id))
+        .leftJoin(contentSchema.streams, eq(contentSchema.yearSubjects.streamId, contentSchema.streams.id))
         .all();
 
     return { documents, trimesters, yearSubjects: yearSubjectsQuery };

@@ -16,7 +16,8 @@ In the current Algerian educational landscape, students face a fragmented digita
 == Core Objectives
 
 - *Absolute Focus:* Deliver content within a distraction-free, ad-free interface designed for deep study and review. No pop-ups, no banners, no autoplay videos.
-- *Hierarchical Archiving:* Organize the entire curriculum into a strict, navigable taxonomy: _Level → Year → Subject → Trimester → Document Type_.
+- *Strict Taxonomy & Exam Codes:* Organize the entire curriculum using the official Algerian Exam Code system, ensuring accurate subject mapping across 9 different High School streams (e.g., distinguishing Physics for Math vs. Science streams) avoiding overlap.
+- *Hierarchical Archiving:* A clear, navigable taxonomy: _Level → Year → Stream (Secondary) → Subject → Trimester → Document Type_.
 - *Interactive Learning:* Move beyond static PDFs by providing a robust 14-type quiz engine that tests comprehension instantly.
 - *Empowering Content Creators:* Provide a powerful yet simple admin CMS that allows educators to upload, categorize, and manage documents and interactive quizzes effortlessly.
 - *Resilient Infrastructure:* Leverage a modern, lightweight stack (SvelteKit + Bun + SQLite) that can scale to millions of concurrent users without infrastructure collapse.

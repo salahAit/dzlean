@@ -35,9 +35,9 @@
 	// Admin Editing Mode
 	let isEditingMode = $state(false);
 
-	// Auto-select the first tab with docs on initial load
+	// Auto-select the first tab with docs on initial load (only for subject mode)
 	$effect(() => {
-		if (data && activeTrimesterTab === 't1') {
+		if (data?.mode === 'subject' && activeTrimesterTab === 't1') {
 			const firstTrimester = data.trimesters?.[0];
 			if (firstTrimester) {
 				activeTrimesterTab = firstTrimester.id;
@@ -51,11 +51,15 @@
 	let filterYear = $state('all');
 	let filterHasSolution = $state(false);
 
-	// Combine documents and quizzes into a single activities array
-	let allActivities = $derived([
-		...data.documents.map((d: any) => ({ ...d, _itemType: 'document' })),
-		...data.quizzes.map((q: any) => ({ ...q, _itemType: 'quiz', type: 'interactive_quiz' }))
-	]);
+	// Combine documents and quizzes into a single activities array (only for subject mode)
+	let allActivities = $derived(
+		data.mode === 'subject'
+			? [
+					...data.documents.map((d: any) => ({ ...d, _itemType: 'document' })),
+					...data.quizzes.map((q: any) => ({ ...q, _itemType: 'quiz', type: 'interactive_quiz' }))
+				]
+			: []
+	);
 
 	// Reactive filtered documents
 	let filteredDocs = $derived.by(() => {
@@ -173,15 +177,19 @@
 </script>
 
 <svelte:head>
-	<title>{data.subject.name_ar} - {data.year.name_ar} - SujetStore</title>
-	<meta name="description" content="فروض واختبارات {data.subject.name_ar} - {data.year.name_ar}" />
-	<meta property="og:title" content="{data.subject.name_ar} - {data.year.name_ar} - SujetStore" />
-	<meta
-		property="og:description"
-		content="فروض واختبارات {data.subject.name_ar} - {data.year
-			.name_ar} | بنك الفروض والاختبارات الجزائرية"
-	/>
-	<meta property="og:type" content="website" />
+	{#if data.mode === 'stream'}
+		<title>{data.stream.name_ar} - {data.year.name_ar} - SujetStore</title>
+		<meta name="description" content="فروض واختبارات شعبة {data.stream.name_ar} - {data.year.name_ar}" />
+	{:else}
+		<title>{data.subject.name_ar} - {data.year.name_ar} - SujetStore</title>
+		<meta name="description" content="فروض واختبارات {data.subject.name_ar} - {data.year.name_ar}" />
+		<meta property="og:title" content="{data.subject.name_ar} - {data.year.name_ar} - SujetStore" />
+		<meta
+			property="og:description"
+			content="فروض واختبارات {data.subject.name_ar} - {data.year.name_ar} | بنك الفروض والاختبارات الجزائرية"
+		/>
+		<meta property="og:type" content="website" />
+	{/if}
 </svelte:head>
 
 <!-- Breadcrumb and Admin Tools -->
@@ -203,7 +211,7 @@
 			<span class="text-foreground font-semibold">{data.subject.name_ar}</span>
 		</nav>
 
-		{#if data.user && data.user.role === 'admin'}
+		{#if data.user && data.user.role === 'admin' && data.mode === 'subject'}
 			<div
 				class="flex items-center gap-3 rounded-full border border-indigo-500/20 bg-indigo-500/10 px-4 py-2 shadow-inner"
 			>
@@ -228,6 +236,69 @@
 	</div>
 </div>
 
+{#if data.mode === 'stream'}
+	<!-- Stream Header -->
+	<section class="hero-gradient relative overflow-hidden py-10 lg:py-14">
+		<div class="relative z-10 mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
+			<div class="text-muted-foreground mb-3 inline-flex items-center gap-2 text-sm">
+				<span class="flex items-center"><GraduationCap size={16} /></span>
+				<span>{data.year.name_ar}</span>
+			</div>
+			<h1 class="mb-2 text-3xl font-extrabold lg:text-4xl">{data.stream.name_ar}</h1>
+			<p class="text-muted-foreground">{data.stream.name_fr}</p>
+		</div>
+	</section>
+
+	<!-- Stream Subjects Grid -->
+	<section class="py-12 lg:py-16">
+		<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+			<h2 class="mb-8 text-center text-2xl font-bold">المواد الدراسية</h2>
+
+			<div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+				{#each data.subjects as subject}
+					<a
+						href="/{data.level.slug}/{data.year.slug}/{subject.slug}"
+						class="subject-card group block"
+					>
+						<div class="flex items-center gap-4">
+							<div
+								class="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-xl"
+								style="background: {subject.color}20; border: 1px solid {subject.color}40; color: {subject.color}"
+							>
+								<DynamicIcon name={subject.icon} size={28} />
+							</div>
+
+							<div class="min-w-0 flex-1">
+								<h3 class="group-hover:text-primary truncate text-lg font-bold transition-colors">
+									{subject.name_ar}
+								</h3>
+								<p class="text-muted-foreground text-sm">{subject.name_fr}</p>
+							</div>
+
+							<div class="flex-shrink-0 text-center">
+								<div class="text-lg font-bold" style="color: {subject.color}">{subject.docCount}</div>
+								<div class="text-muted-foreground text-xs">وثيقة</div>
+							</div>
+						</div>
+
+						{#if subject.coefficient}
+							<div class="text-muted-foreground mt-3 text-xs">
+								المعامل: <span class="text-foreground font-bold">{subject.coefficient}</span>
+							</div>
+						{/if}
+					</a>
+				{/each}
+			</div>
+
+			{#if data.subjects.length === 0}
+				<div class="text-muted-foreground flex flex-col items-center py-16 text-center">
+					<Inbox size={48} class="mb-4 opacity-50" />
+					<p class="text-xl">لا توجد مواد مسجلة لهذه الشعبة</p>
+				</div>
+			{/if}
+		</div>
+	</section>
+{:else}
 <!-- Subject Header -->
 <section class="hero-gradient relative overflow-hidden py-10 lg:py-14">
 	{#if isEditingMode}
@@ -672,4 +743,5 @@
 			</div>
 		{/if}
 	</div>
+{/if}
 {/if}

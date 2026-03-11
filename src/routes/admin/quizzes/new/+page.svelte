@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { Save, AlertCircle } from 'lucide-svelte';
-	import { onMount } from 'svelte';
+	let { data }: { data: any } = $props();
 
 	let title = $state('');
 	let titleAr = $state('');
@@ -12,37 +12,14 @@
 	let isPremium = $state(false);
 	let isPublished = $state(false);
 
-	let yearSubjectId = $state(0);
+	let yearSubjectId = $state(data.yearSubjects?.[0]?.id || 0);
 	let trimesterId = $state<string | undefined>(undefined);
 
 	// Form options
-	let yearSubjects = $state<any[]>([]);
-	let trimesters = $state<any[]>([]);
-	let loadingData = $state(true);
+	let yearSubjects = $state<any[]>(data.yearSubjects || []);
+	let trimesters = $state<any[]>(data.trimesters || []);
 	let saving = $state(false);
 	let error = $state('');
-
-	onMount(async () => {
-		try {
-			// Fetch admin meta for yearSubjects and trimesters
-			// In a real app we'd fetch these from an API. Minimal mockup here:
-			// I'll fetch them from the public subjects API to populate selectors
-			const [ysRes, triRes] = await Promise.all([
-				fetch('/api/admin/documents/meta'), // Re-using existing admin meta endpoint if it exists
-				fetch('/api/admin/documents/meta')
-			]);
-			// Wait, the meta endpoint might be different. I will just fetch all subjects.
-			const res = await fetch('/api/admin/documents/meta');
-			if (res.ok) {
-				const data = await res.json();
-				yearSubjects = data.yearSubjects || [];
-				trimesters = data.trimesters || [];
-				if (yearSubjects.length > 0) yearSubjectId = yearSubjects[0].id;
-			}
-		} finally {
-			loadingData = false;
-		}
-	});
 
 	async function save() {
 		if (!title || !titleAr || !yearSubjectId) {
@@ -131,7 +108,9 @@
 					class="w-full rounded-xl border border-white/10 bg-black/20 p-3 text-right text-sm outline-none focus:border-purple-500"
 				>
 					{#each yearSubjects as ys}
-						<option value={ys.id}>{ys.yearName} - {ys.subjectName}</option>
+						<option value={ys.id}>
+							{ys.streamAr ? `${ys.yearAr} - ${ys.streamAr} - ${ys.subjectAr}` : `${ys.yearAr} - ${ys.subjectAr}`}
+						</option>
 					{/each}
 				</select>
 			</div>
@@ -219,7 +198,7 @@
 		<div class="flex justify-end pt-4">
 			<button
 				onclick={save}
-				disabled={saving || loadingData}
+				disabled={saving}
 				class="flex items-center gap-2 rounded-xl bg-purple-600 px-8 py-3 font-bold text-white shadow-lg transition-all hover:bg-purple-700 disabled:opacity-50"
 			>
 				{#if saving}

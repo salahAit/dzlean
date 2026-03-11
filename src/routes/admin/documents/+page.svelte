@@ -25,7 +25,8 @@
 
 	function getYearSubjectLabel(id: number) {
 		const ys = data.yearSubjects.find((y: any) => y.id === id);
-		return ys ? `${ys.yearAr} - ${ys.subjectAr}` : 'غير معروف';
+		if (!ys) return 'غير معروف';
+		return ys.streamAr ? `${ys.yearAr} - ${ys.streamAr} - ${ys.subjectAr}` : `${ys.yearAr} - ${ys.subjectAr}`;
 	}
 
 	function openEdit(item: any) {
@@ -249,9 +250,6 @@
 
 				<div class="grid flex-col gap-4 sm:grid-cols-2">
 					<div>
-						<label for="yearSubjectId" class="mb-1 block text-sm font-medium"
-							>السنة الدراسية والمادة</label
-						>
 						<select
 							id="yearSubjectId"
 							name="yearSubjectId"
@@ -259,7 +257,9 @@
 							class="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none [&>option]:bg-[#0a0f1c]"
 						>
 							{#each data.yearSubjects as ys}
-								<option value={ys.id}>{ys.yearAr} - {ys.subjectAr}</option>
+								<option value={ys.id}>
+									{ys.streamAr ? `${ys.yearAr} - ${ys.streamAr} - ${ys.subjectAr}` : `${ys.yearAr} - ${ys.subjectAr}`}
+								</option>
 							{/each}
 						</select>
 					</div>
@@ -424,9 +424,6 @@
 
 				<div class="grid flex-col gap-4 sm:grid-cols-2">
 					<div>
-						<label for="edit_yearSubjectId" class="mb-1 block text-sm font-medium"
-							>السنة الدراسية والمادة</label
-						>
 						<select
 							id="edit_yearSubjectId"
 							name="yearSubjectId"
@@ -435,7 +432,9 @@
 							class="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none [&>option]:bg-[#0a0f1c]"
 						>
 							{#each data.yearSubjects as ys}
-								<option value={ys.id}>{ys.yearAr} - {ys.subjectAr}</option>
+								<option value={ys.id}>
+									{ys.streamAr ? `${ys.yearAr} - ${ys.streamAr} - ${ys.subjectAr}` : `${ys.yearAr} - ${ys.subjectAr}`}
+								</option>
 							{/each}
 						</select>
 					</div>
