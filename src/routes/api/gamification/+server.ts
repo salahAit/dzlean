@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestEvent } from '@sveltejs/kit';
-import Database from 'better-sqlite3';
+import { Database } from 'bun:sqlite';
 
 const usersDb = new Database('data/users.db');
 
