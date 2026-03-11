@@ -81,12 +81,6 @@
 					2}%;"
 				title={zone.label || ''}
 			>
-				{#if zone.label}
-					<span
-						class="text-foreground/60 absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] font-bold whitespace-nowrap dark:text-white/60"
-						>{zone.label}</span
-					>
-				{/if}
 			</button>
 		{/each}
 
@@ -102,22 +96,7 @@
 		{/if}
 	</div>
 
-	<!-- Zone buttons for accessibility / mobile fallback -->
-	{#if (data.zones || []).length > 0 && data.zones[0].label}
-		<div class="flex flex-wrap justify-center gap-2">
-			{#each data.zones || [] as zone, i}
-				<button
-					onclick={() => selectZone(i)}
-					{disabled}
-					class="rounded-lg px-3 py-1.5 text-sm font-bold transition-all {selectedZone === i
-						? 'bg-blue-600 text-white'
-						: 'border-border bg-secondary text-secondary-foreground/70 hover:bg-secondary/80 border dark:border-white/20 dark:bg-white/5 dark:text-white/70 dark:hover:bg-white/10'} disabled:opacity-50"
-				>
-					{zone.label}
-				</button>
-			{/each}
-		</div>
-	{/if}
+
 
 	{#if showResult}
 		<div

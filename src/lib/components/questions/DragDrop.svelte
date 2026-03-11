@@ -6,6 +6,7 @@
 
 	let assignments = $state<Record<string, number | null>>({});
 	let dragItem = $state<string | null>(null);
+	let selectedItem = $state<string | null>(null);
 
 	// Initialize
 	$effect(() => {
@@ -18,10 +19,16 @@
 		dragItem = text;
 	}
 
+	function selectItem(text: string) {
+		selectedItem = selectedItem === text ? null : text;
+	}
+
 	function drop(categoryIndex: number) {
-		if (dragItem) {
-			assignments = { ...assignments, [dragItem]: categoryIndex };
+		const itemText = dragItem || selectedItem;
+		if (itemText) {
+			assignments = { ...assignments, [itemText]: categoryIndex };
 			dragItem = null;
+			selectedItem = null;
 			onAnswer({ assignments: { ...assignments } });
 		}
 	}
@@ -44,7 +51,9 @@
 			<div
 				draggable="true"
 				ondragstart={() => startDrag(item.text)}
-				class="border-border bg-secondary cursor-grab rounded-lg border-2 border-dashed px-4 py-2 font-semibold transition-all hover:border-blue-500/50 hover:bg-blue-500/5 active:cursor-grabbing dark:border-white/20 dark:bg-white/5"
+				role="option"
+				onclick={() => selectItem(item.text)}
+				class="border-border bg-secondary cursor-grab rounded-lg border-2 border-dashed px-4 py-2 font-semibold transition-all hover:border-blue-500/50 hover:bg-blue-500/5 active:cursor-grabbing dark:border-white/20 dark:bg-white/5 {selectedItem === item.text ? 'ring-2 ring-blue-500 border-blue-500 bg-blue-500/10 dark:bg-blue-500/20' : ''}"
 			>
 				{item.text}
 			</div>
@@ -60,8 +69,9 @@
 			<div
 				ondragover={allowDrop}
 				ondrop={() => drop(ci)}
+				onclick={() => drop(ci)}
 				role="region"
-				class="border-border/50 bg-secondary/30 min-h-[120px] rounded-2xl border-2 border-dashed p-4 transition-colors dark:border-white/15 dark:bg-white/[0.02]"
+				class="border-border/50 bg-secondary/30 min-h-[120px] rounded-2xl border-2 border-dashed p-4 transition-colors dark:border-white/15 dark:bg-white/[0.02] {selectedItem ? 'hover:border-blue-500/50 hover:bg-blue-500/5 cursor-pointer' : ''}"
 			>
 				<h4 class="mb-3 text-center text-sm font-bold text-blue-400">{cat}</h4>
 				<div class="flex flex-wrap gap-2">

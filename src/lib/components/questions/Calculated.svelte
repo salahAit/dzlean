@@ -34,7 +34,7 @@
 	});
 
 	// Build display text with variables substituted
-	let displayText = $derived(() => {
+	let displayText = $derived.by(() => {
 		let text = data.displayTemplate || data.formula || '';
 		for (const [key, val] of Object.entries(vars)) {
 			text = text.replaceAll(`{${key}}`, String(val));
@@ -57,7 +57,7 @@
 		class="border-border bg-secondary/50 rounded-xl border p-4 text-center dark:border-white/10 dark:bg-white/5"
 		dir="ltr"
 	>
-		<p class="font-mono text-lg font-bold text-blue-600 dark:text-blue-400">{displayText()}</p>
+		<p class="font-mono text-lg font-bold text-blue-600 dark:text-blue-400">{displayText}</p>
 	</div>
 
 	<div class="flex items-center justify-center gap-3">

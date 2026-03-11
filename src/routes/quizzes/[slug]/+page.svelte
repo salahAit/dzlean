@@ -102,7 +102,13 @@
 		matching: 'ربط',
 		fill_blank: 'ملء فراغ',
 		short_answer: 'إجابة قصيرة',
-		cloze: 'اختيار من قائمة'
+		cloze: 'اختيار من قائمة',
+		calculated: 'سؤال حسابي',
+		sentence_reorder: 'ترتيب جملة',
+		hotspot: 'تحديد منطقة',
+		drag_to_image: 'تسميات على صورة',
+		matrix: 'شبكة اختيارات',
+		essay: 'مقال'
 	};
 
 	function startQuiz(selectedMode: 'exam' | 'practice') {
@@ -168,6 +174,22 @@
 				return qd.keywords?.join(', ') || '';
 			case 'cloze':
 				return qd.options?.[qd.correctIndex] || '';
+			case 'calculated':
+				return 'يتم حسابه تلقائياً';
+			case 'sentence_reorder':
+				return qd.correctOrder?.map((i: number) => qd.words?.[i]).join(' ') || '';
+			case 'hotspot':
+				return qd.zones?.[qd.correctZone]?.label || `المنطقة ${qd.correctZone + 1}`;
+			case 'drag_to_image':
+				return (qd.labels || []).map((l: any) => l.text).join(', ');
+			case 'matrix':
+				return (qd.statements || []).map((s: string, i: number) => `${s}: ${qd.columns?.[qd.correctAnswers?.[i]]}`).join(' | ');
+			case 'essay':
+				return qd.keywords?.length ? `يجب أن تحتوي على: ${qd.keywords.join('، ')}` : 'تصحيح يدوي';
+			case 'drag_drop':
+				return (qd.items || []).map((item: any) => `${item.text} → ${item.category}`).join(' | ');
+			case 'matching':
+				return (qd.pairs || []).map((p: any) => `${p.left} ↔ ${p.right}`).join(' | ');
 			default:
 				return '';
 		}
@@ -199,6 +221,26 @@
 				return answer.order?.join(' → ') || 'لم تتم الإجابة';
 			case 'cloze':
 				return qd.options?.[answer.selectedIndex] || 'لم تتم الإجابة';
+			case 'calculated':
+				return answer.value !== undefined ? `${answer.value}` : 'لم تتم الإجابة';
+			case 'sentence_reorder':
+				return answer.order?.map((i: number) => qd.words?.[i]).join(' ') || 'لم تتم الإجابة';
+			case 'hotspot':
+				return answer.zone !== undefined ? (qd.zones?.[answer.zone]?.label || `المنطقة ${answer.zone + 1}`) : 'لم تتم الإجابة';
+			case 'drag_to_image':
+				return Object.keys(answer.placements || {}).length > 0 ? `تم وضع ${Object.keys(answer.placements).length} تسمية` : 'لم تتم الإجابة';
+			case 'matrix':
+				return Object.keys(answer.answers || {}).length > 0 ? (qd.statements || []).map((s: string, i: number) => `${s}: ${qd.columns?.[answer.answers?.[i]]}`).join(' | ') : 'لم تتم الإجابة';
+			case 'essay':
+				return answer.text ? `${answer.text.substring(0, 80)}${answer.text.length > 80 ? '...' : ''}` : 'لم تتم الإجابة';
+			case 'drag_drop': {
+				const assigned = Object.entries(answer.assignments || {}).filter(([_, v]) => v !== null);
+				return assigned.length > 0 ? assigned.map(([item, catIdx]) => `${item} → ${qd.categories?.[catIdx as number] || catIdx}`).join(' | ') : 'لم تتم الإجابة';
+			}
+			case 'matching': {
+				const pairs = qd.pairs || [];
+				return Object.entries(answer.matches || {}).map(([leftIdx, rightIdx]) => `${pairs[Number(leftIdx)]?.left} ↔ ${pairs[Number(rightIdx)]?.right}`).join(' | ') || 'لم تتم الإجابة';
+			}
 			default:
 				return JSON.stringify(answer);
 		}
@@ -223,7 +265,11 @@
 				return JSON.stringify(answer.order) === JSON.stringify(correctItems);
 			case 'drag_drop':
 				if (!answer?.assignments) return false;
-				return qd.items.every((item: any) => answer.assignments[item.text] === item.category);
+				return qd.items.every((item: any) => {
+					const assignedIdx = answer.assignments[item.text];
+					if (assignedIdx === null || assignedIdx === undefined) return false;
+					return qd.categories[assignedIdx] === item.category;
+				});
 			case 'matching':
 				if (!answer?.matches) return false;
 				return Object.entries(answer.matches).every(
@@ -240,6 +286,21 @@
 				return matchCount >= (qd.minKeywords || 1);
 			case 'cloze':
 				return answer?.selectedIndex === qd.correctIndex;
+			case 'calculated':
+				if (answer?.value === undefined) return false;
+				return Math.abs(answer.value - answer.expected) <= (qd.tolerance || 0);
+			case 'sentence_reorder':
+				if (!answer?.order) return false;
+				return JSON.stringify(answer.order) === JSON.stringify(qd.correctOrder);
+			case 'hotspot':
+				if (answer?.zone === undefined) return false;
+				return answer.zone === qd.correctZone;
+			case 'drag_to_image':
+				return answer?.correct === true;
+			case 'matrix':
+				return answer?.correct === true;
+			case 'essay':
+				return answer?.correct === true;
 			default:
 				return false;
 		}
@@ -640,7 +701,17 @@
 			</div>
 
 			<h2 class="mb-2 text-2xl font-bold">
-				{passed ? '🎉 أحسنت!' : '💪 حاول مرة أخرى'}
+				{#if percentage === 100}
+					🏆 ممتاز! علامة كاملة
+				{:else if percentage >= 80}
+					🌟 أحسنت! أداء رائع
+				{:else if percentage >= 60}
+					🎉 جيد! لقد اجتزت التمرين
+				{:else if percentage >= 40}
+					📚 لا بأس، راجع الدروس وحاول مجدداً
+				{:else}
+					💪 لا تستسلم! المحاولة هي الطريق للنجاح
+				{/if}
 			</h2>
 			<p class="text-muted-foreground mb-2">الوقت: {formatTime(elapsed)}</p>
 			{#if mode === 'practice'}
