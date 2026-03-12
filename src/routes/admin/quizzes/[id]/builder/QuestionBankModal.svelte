@@ -93,7 +93,7 @@
 		aria-modal="true"
 	>
 		<div
-			class="flex h-full max-h-[85vh] w-full max-w-4xl flex-col rounded-2xl border border-border bg-slate-900 shadow-2xl"
+			class="flex h-full max-h-[85vh] w-full max-w-4xl flex-col rounded-2xl border border-border bg-background shadow-2xl"
 		>
 			<!-- Header -->
 			<div class="flex items-center justify-between border-b border-border p-6">

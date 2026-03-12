@@ -134,13 +134,13 @@
 				type="text"
 				bind:value={newCatName}
 				placeholder="اسم التصنيف"
-				class="focus:border-primary w-1/3 rounded-lg border border-border bg-[#0f172a] p-2 text-foreground outline-none"
+				class="focus:border-primary w-1/3 rounded-lg border border-border bg-background p-2 text-foreground outline-none"
 			/>
 			<input
 				type="text"
 				bind:value={newCatDesc}
 				placeholder="الوصف (اختياري)"
-				class="focus:border-primary w-1/2 rounded-lg border border-border bg-[#0f172a] p-2 text-foreground outline-none"
+				class="focus:border-primary w-1/2 rounded-lg border border-border bg-background p-2 text-foreground outline-none"
 			/>
 			<button
 				onclick={saveNew}
@@ -252,13 +252,13 @@
 								type="text"
 								bind:value={newCatName}
 								placeholder="اسم التصنيف الفرعي"
-								class="focus:border-primary w-48 rounded border border-border bg-[#0f172a] p-1.5 text-sm text-foreground outline-none"
+								class="focus:border-primary w-48 rounded border border-border bg-background p-1.5 text-sm text-foreground outline-none"
 							/>
 							<input
 								type="text"
 								bind:value={newCatDesc}
 								placeholder="الوصف"
-								class="focus:border-primary flex-1 rounded border border-border bg-[#0f172a] p-1.5 text-sm text-foreground outline-none"
+								class="focus:border-primary flex-1 rounded border border-border bg-background p-1.5 text-sm text-foreground outline-none"
 							/>
 							<button
 								onclick={saveNew}

@@ -455,7 +455,7 @@
 							id="edit_trimesterId"
 							name="trimesterId"
 							bind:value={editingItem.trimesterId}
-							class="w-full rounded-xl border bg-background border-input text-foreground px-3 py-2 focus:ring-ring focus:border-primary focus:ring-1 focus:ring-primary focus:ring-1 focus:ring-primary focus:outline-none [&>option]:bg-[#0a0f1c]"
+							class="w-full rounded-xl border bg-background border-input text-foreground px-3 py-2 focus:ring-ring focus:border-primary focus:ring-1 focus:ring-primary focus:ring-1 focus:ring-primary focus:outline-none [&>option]:bg-background"
 						>
 							<option value="">-- بدون فصل (درس عام) --</option>
 							{#each data.trimesters as t}

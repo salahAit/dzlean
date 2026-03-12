@@ -331,9 +331,9 @@
 					bind:value={selectedType}
 					class="w-48 appearance-none rounded-xl border border-border bg-card text-card-foreground shadow-sm py-3 pr-12 pl-4 text-sm font-medium transition-colors outline-none hover:bg-muted focus:border-primary focus:ring-1 focus:ring-primary focus:ring-1 focus:ring-primary"
 				>
-					<option value="all" class="bg-[#1a1b26]">كل الأنواع</option>
+					<option value="all" class="bg-background">كل الأنواع</option>
 					{#each QUESTION_TYPES as qt}
-						<option value={qt.id} class="bg-[#1a1b26]">{qt.name}</option>
+						<option value={qt.id} class="bg-background">{qt.name}</option>
 					{/each}
 				</select>
 			</div>
@@ -341,10 +341,10 @@
 				bind:value={selectedDifficulty}
 				class="w-40 rounded-xl border border-border bg-card text-card-foreground shadow-sm px-4 py-3 text-sm font-medium transition-colors outline-none hover:bg-muted focus:border-primary focus:ring-1 focus:ring-primary focus:ring-1 focus:ring-primary"
 			>
-				<option value="all" class="bg-[#1a1b26]">كل المستويات</option>
-				<option value="easy" class="bg-[#1a1b26]">سهل</option>
-				<option value="medium" class="bg-[#1a1b26]">متوسط</option>
-				<option value="hard" class="bg-[#1a1b26]">صعب</option>
+				<option value="all" class="bg-background">كل المستويات</option>
+				<option value="easy" class="bg-background">سهل</option>
+				<option value="medium" class="bg-background">متوسط</option>
+				<option value="hard" class="bg-background">صعب</option>
 			</select>
 		</div>
 	</div>
@@ -446,7 +446,7 @@
 		role="presentation"
 	>
 		<div
-			class="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-border bg-[#0f172a] p-8 shadow-2xl"
+			class="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-border bg-background p-8 shadow-2xl"
 			onclick={(e) => e.stopPropagation()}
 			role="presentation"
 		>

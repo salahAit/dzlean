@@ -140,12 +140,12 @@
 							class="w-full rounded-xl border border-border bg-background p-3 font-mono text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary"
 						>
 							{#if categories.length === 0}
-								<option class="bg-[#1a1b26]" value={null} disabled
+								<option class="bg-background" value={null} disabled
 									>لا توجد تصنيفات، يرجى إنشاء واحد أولاً</option
 								>
 							{/if}
 							{#each categories as cat}
-								<option class="bg-[#1a1b26]" value={cat.id}>{cat.name}</option>
+								<option class="bg-background" value={cat.id}>{cat.name}</option>
 							{/each}
 						</select>
 					</div>
@@ -156,9 +156,9 @@
 							bind:value={difficulty}
 							class="w-full rounded-xl border border-border bg-background p-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary"
 						>
-							<option class="bg-[#1a1b26]" value="easy">سهل (Easy)</option>
-							<option class="bg-[#1a1b26]" value="medium">متوسط (Medium)</option>
-							<option class="bg-[#1a1b26]" value="hard">صعب (Hard)</option>
+							<option class="bg-background" value="easy">سهل (Easy)</option>
+							<option class="bg-background" value="medium">متوسط (Medium)</option>
+							<option class="bg-background" value="hard">صعب (Hard)</option>
 						</select>
 					</div>
 
@@ -211,7 +211,7 @@
 							class="w-full rounded-xl border border-emerald-500/30 bg-background p-4 text-emerald-400 outline-none focus:border-primary focus:ring-1 focus:ring-primary"
 						>
 							{#each Object.entries(typeLabels) as [val, label]}
-								<option class="bg-[#1a1b26]" value={val}>{label}</option>
+								<option class="bg-background" value={val}>{label}</option>
 							{/each}
 						</select>
 					</div>

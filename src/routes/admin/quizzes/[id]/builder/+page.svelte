@@ -297,7 +297,7 @@
 			tabindex="0"
 		>
 			<div
-				class="w-full max-w-2xl rounded-2xl border border-border bg-slate-900 p-6 shadow-2xl"
+				class="w-full max-w-2xl rounded-2xl border border-border bg-background p-6 shadow-2xl"
 				onclick={(e) => e.stopPropagation()}
 				role="dialog"
 				aria-modal="true"
