@@ -1,13 +1,14 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { Brain, Plus, Edit, Trash2, Eye, EyeOff, Lock, CheckCircle, Search, Copy } from 'lucide-svelte';
+	import { Brain, Plus, Edit, Trash2, Eye, EyeOff, Lock, CheckCircle, Search, Copy, SaveAll, Hash, FolderTree } from 'lucide-svelte';
 
 	let quizzes = $state<any[]>([]);
+	let stats = $state({ totalQuizzes: 0, totalQuestions: 0, totalCategories: 0 });
 	let loading = $state(true);
 	let searchQuery = $state('');
 
 	onMount(async () => {
-		await loadQuizzes();
+		await Promise.all([loadQuizzes(), loadStats()]);
 	});
 
 	async function loadQuizzes() {
@@ -17,6 +18,15 @@
 			if (res.ok) quizzes = await res.json();
 		} finally {
 			loading = false;
+		}
+	}
+
+	async function loadStats() {
+		try {
+			const res = await fetch('/api/admin/quizzes/stats');
+			if (res.ok) stats = await res.json();
+		} catch (e) {
+			console.error(e);
 		}
 	}
 
@@ -72,10 +82,35 @@
 		</h1>
 		<a
 			href="/admin/quizzes/new"
-			class="flex items-center gap-2 rounded-xl bg-purple-600 px-4 py-2 text-sm font-bold text-foreground shadow-lg shadow-purple-600/20 transition-all hover:bg-purple-700"
+			class="flex items-center gap-2 rounded-xl bg-purple-600 px-4 py-2 text-sm font-bold text-foreground shadow-lg shadow-purple-600/20 transition-all hover:bg-purple-700 hover:text-white"
 		>
 			<Plus size={18} /> تمرين جديد
 		</a>
+	</div>
+
+	<!-- Stats Dashboard -->
+	<div class="mb-6 grid grid-cols-1 gap-6 md:grid-cols-3">
+		<div class="flex flex-col gap-2 rounded-2xl border border-border bg-card p-6 shadow-sm">
+			<div class="flex items-center gap-3 text-purple-500">
+				<Brain size={24} />
+				<span class="font-bold">إجمالي التمارين</span>
+			</div>
+			<p class="text-3xl font-black text-foreground">{stats.totalQuizzes}</p>
+		</div>
+		<div class="flex flex-col gap-2 rounded-2xl border border-border bg-card p-6 shadow-sm">
+			<div class="flex items-center gap-3 text-emerald-500">
+				<Hash size={24} />
+				<span class="font-bold">إجمالي الأسئلة</span>
+			</div>
+			<p class="text-3xl font-black text-foreground">{stats.totalQuestions}</p>
+		</div>
+		<div class="flex flex-col gap-2 rounded-2xl border border-border bg-card p-6 shadow-sm">
+			<div class="flex items-center gap-3 text-blue-500">
+				<FolderTree size={24} />
+				<span class="font-bold">التصنيفات</span>
+			</div>
+			<p class="text-3xl font-black text-foreground">{stats.totalCategories}</p>
+		</div>
 	</div>
 
 	<!-- Search & Filters -->

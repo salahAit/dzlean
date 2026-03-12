@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount, createEventDispatcher } from 'svelte';
-	import { Search, Plus, Check, X, Database } from 'lucide-svelte';
+	import { Search, Plus, Check, X, Database, Filter } from 'lucide-svelte';
+	import { getQuestionType } from '$lib/admin/questionTypes';
 
 	let {
 		isOpen = $bindable(false),
@@ -83,23 +84,6 @@
 			importing = false;
 		}
 	}
-
-	const typeLabels: Record<string, string> = {
-		mcq: 'اختيار من متعدد',
-		true_false: 'صح أو خطأ',
-		ordering: 'ترتيب متسلسل',
-		drag_drop: 'تصنيف',
-		matching: 'ربط',
-		fill_blank: 'أكمل الفراغ',
-		short_answer: 'إجابة قصيرة',
-		cloze: 'اختيار من القائمة',
-		calculated: 'حسابي متغير',
-		sentence_reorder: 'إعادة ترتيب جملة',
-		hotspot: 'تحديد على صورة',
-		drag_to_image: 'سحب إلى صورة',
-		matrix: 'مصفوفة',
-		essay: 'مقال / إجابة طويلة'
-	};
 </script>
 
 {#if isOpen}
@@ -153,6 +137,7 @@
 				{:else}
 					<div class="grid gap-3">
 						{#each filteredQuestions as q}
+							{@const qType = getQuestionType(q.type)}
 							<!-- svelte-ignore a11y_click_events_have_key_events -->
 							<div
 								class="flex cursor-pointer items-center justify-between rounded-xl border p-4 transition-all hover:bg-card text-card-foreground shadow-sm {selectedQuestions.has(
@@ -176,12 +161,16 @@
 									</div>
 									<div>
 										<p class="line-clamp-2 max-w-2xl font-semibold text-foreground/90">
-											{q.questionTextAr || q.questionText}
+											{q.questionTextAr || q.questionText || 'بدون نص'}
 										</p>
 										<p class="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
-											<span class="rounded bg-muted px-2 py-0.5"
-												>{typeLabels[q.type] || q.type}</span
-											>
+											<span class="rounded px-2 py-0.5 font-medium flex items-center gap-1.5 {qType.bg} {qType.color} {qType.border} border">
+												{#if qType.icon}
+													{@const IconIcon = qType.icon}
+													<IconIcon size={12} />
+												{/if}
+												{qType.name}
+											</span>
 											<span class="opacity-50">•</span>
 											<span
 												class={q.difficulty === 'hard'

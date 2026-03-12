@@ -32,3 +32,4 @@
 #include "chapters/06-gamification.typ"
 #include "chapters/07-admin-dashboard.typ"
 #include "chapters/08-deployment-roadmap.typ"
+#include "chapters/09-educational-hierarchy.typ"

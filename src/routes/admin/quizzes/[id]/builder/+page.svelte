@@ -15,6 +15,7 @@
 	import { onMount, tick } from 'svelte';
 	import QuestionForm from './QuestionForm.svelte'; // The dynamic wrapper we will create
 	import QuestionBankModal from './QuestionBankModal.svelte';
+	import { QUESTION_TYPES, getQuestionType } from '$lib/admin/questionTypes';
 
 	let quizId = $derived(page.params.id);
 	let quiz = $state<any>(null);
@@ -28,23 +29,6 @@
 	let showBankModal = $state(false);
 	let editingQuestion = $state<any>(null); // null = not editing, {} = new question
 	let jsonFileInput = $state<HTMLInputElement | null>(null);
-
-	const QUESTION_TYPES = [
-		{ id: 'mcq', name: 'اختيار من متعدد', icon: 'M' },
-		{ id: 'true_false', name: 'صحيح أو خطأ', icon: 'T/F' },
-		{ id: 'ordering', name: 'ترتيب', icon: '1-2-3' },
-		{ id: 'drag_drop', name: 'سحب وإفلات', icon: 'D&D' },
-		{ id: 'matching', name: 'ربط', icon: 'A-B' },
-		{ id: 'fill_blank', name: 'ملء الفراغ', icon: '___' },
-		{ id: 'short_answer', name: 'إجابة قصيرة', icon: 'Aa' },
-		{ id: 'cloze', name: 'اختيار من قائمة', icon: '[v]' },
-		{ id: 'calculated', name: 'حسابي متغير', icon: 'f(x)' },
-		{ id: 'sentence_reorder', name: 'إعادة ترتيب جملة', icon: '⇄' },
-		{ id: 'hotspot', name: 'تحديد على صورة', icon: '📍' },
-		{ id: 'drag_to_image', name: 'سحب إلى صورة', icon: '🖼' },
-		{ id: 'matrix', name: 'مصفوفة', icon: '▦' },
-		{ id: 'essay', name: 'مقال / إجابة طويلة', icon: '✍' }
-	];
 
 	onMount(async () => {
 		await loadQuiz();
@@ -321,14 +305,15 @@
 				<h2 class="mb-4 text-center text-xl font-bold">اختر نوع السؤال</h2>
 				<div class="grid grid-cols-2 gap-4 md:grid-cols-4">
 					{#each QUESTION_TYPES as type}
+						{@const IconComp = type.icon}
 						<button
 							onclick={() => startAdding(type.id)}
 							class="flex flex-col items-center justify-center gap-2 rounded-xl border border-border bg-card text-card-foreground shadow-sm p-4 transition-all hover:border-blue-500 hover:bg-muted"
 						>
 							<div
-								class="flex h-12 w-12 items-center justify-center rounded-full bg-blue-500/20 text-lg font-bold text-blue-400"
+								class="flex h-12 w-12 items-center justify-center rounded-full {type.bg} {type.color}"
 							>
-								{type.icon}
+								<IconComp size={24} />
 							</div>
 							<span class="text-sm font-semibold">{type.name}</span>
 						</button>
@@ -347,6 +332,7 @@
 	{#if !loadingData && questions.length > 0}
 		<div class="space-y-3">
 			{#each questions as q, index}
+				{@const qType = QUESTION_TYPES.find((t) => t.id === q.type)}
 				<div
 					draggable="true"
 					ondragstart={(e) => dragStart(e, index)}
@@ -363,9 +349,15 @@
 					</div>
 
 					<div
-						class="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-blue-500/20 font-bold text-blue-400"
+						class="flex h-8 w-8 shrink-0 items-center justify-center rounded {qType?.bg || 'bg-muted'} {qType?.color || 'text-muted-foreground'}"
+						title={qType?.name}
 					>
-						{index + 1}
+						{#if qType?.icon}
+							{@const IconIcon = qType.icon}
+							<IconIcon size={16} />
+						{:else}
+							<span class="text-xs font-bold">{index + 1}</span>
+						{/if}
 					</div>
 
 					<div class="flex-1 overflow-hidden">

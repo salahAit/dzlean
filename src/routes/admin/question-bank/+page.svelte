@@ -30,6 +30,7 @@
 	import DragToImage from '$lib/components/questions/DragToImage.svelte';
 	import Matrix from '$lib/components/questions/Matrix.svelte';
 	import Essay from '$lib/components/questions/Essay.svelte';
+	import { QUESTION_TYPES, getQuestionType } from '$lib/admin/questionTypes'; // Added new import
 
 	let questions = $state<any[]>([]);
 	let loading = $state(true);
@@ -270,23 +271,6 @@
 			return matchesSearch && matchesType && matchesDifficulty;
 		})
 	);
-
-	const typeLabels: Record<string, string> = {
-		mcq: 'اختيار من متعدد',
-		true_false: 'صح أو خطأ',
-		ordering: 'ترتيب متسلسل',
-		drag_drop: 'تصنيف (سحب وإفلات)',
-		matching: 'ربط',
-		fill_blank: 'أكمل الفراغ',
-		short_answer: 'إجابة قصيرة',
-		cloze: 'اختيار من القائمة',
-		calculated: 'حسابي متغير',
-		sentence_reorder: 'إعادة ترتيب جملة',
-		hotspot: 'تحديد على صورة',
-		drag_to_image: 'سحب إلى صورة',
-		matrix: 'مصفوفة',
-		essay: 'مقال / إجابة طويلة'
-	};
 </script>
 
 <div class="space-y-6">
@@ -348,8 +332,8 @@
 					class="w-48 appearance-none rounded-xl border border-border bg-card text-card-foreground shadow-sm py-3 pr-12 pl-4 text-sm font-medium transition-colors outline-none hover:bg-muted focus:border-primary focus:ring-1 focus:ring-primary focus:ring-1 focus:ring-primary"
 				>
 					<option value="all" class="bg-[#1a1b26]">كل الأنواع</option>
-					{#each Object.entries(typeLabels) as [val, label]}
-						<option value={val} class="bg-[#1a1b26]">{label}</option>
+					{#each QUESTION_TYPES as qt}
+						<option value={qt.id} class="bg-[#1a1b26]">{qt.name}</option>
 					{/each}
 				</select>
 			</div>
@@ -385,6 +369,7 @@
 				</thead>
 				<tbody class="divide-y divide-white/5">
 					{#each filteredQuestions as q}
+						{@const qType = getQuestionType(q.type)}
 						<tr class="transition-colors hover:bg-muted/50">
 							<td class="max-w-[12rem] px-4 py-4 font-mono text-xs text-emerald-400">
 								{#if q.categoryName}
@@ -400,9 +385,13 @@
 							</td>
 							<td class="p-4">
 								<span
-									class="inline-flex items-center gap-1 rounded-full bg-blue-500/10 px-2.5 py-1 text-xs font-semibold text-blue-400"
+									class="inline-flex items-center gap-1.5 rounded-md bg-muted/30 px-2.5 py-1 text-xs font-semibold {qType.color} {qType.border} border"
 								>
-									{typeLabels[q.type] || q.type}
+									{#if qType.icon}
+										{@const IconIcon = qType.icon}
+										<IconIcon size={14} />
+									{/if}
+									{qType.name}
 								</span>
 							</td>
 							<td class="p-4">
@@ -449,9 +438,10 @@
 </div>
 
 {#if previewQuestion}
+	{@const qType = getQuestionType(previewQuestion.type)}
 	<!-- Preview Modal -->
 	<div
-		class="fixed inset-0 z-50 flex items-center justify-center bg-background/80 px-4 backdrop-blur-sm"
+		class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
 		onclick={closePreview}
 		role="presentation"
 	>
@@ -473,9 +463,13 @@
 				</h2>
 				<div class="mt-2 flex gap-2">
 					<span
-						class="inline-flex items-center gap-1 rounded bg-blue-500/20 px-2.5 py-1 text-xs font-semibold text-blue-300"
+						class="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-semibold {qType.color} {qType.border} border {qType.bg}"
 					>
-						نوع السؤال: {typeLabels[previewQuestion.type] || previewQuestion.type}
+						{#if qType.icon}
+							{@const IconIcon = qType.icon}
+							<IconIcon size={14} />
+						{/if}
+						نوع السؤال: {qType.name}
 					</span>
 					<span class="rounded bg-muted px-2.5 py-1 text-xs text-foreground/60">
 						الصعوبة: {previewQuestion.difficulty}
