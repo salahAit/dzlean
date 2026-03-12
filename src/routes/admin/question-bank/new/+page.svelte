@@ -3,41 +3,25 @@
 	import { Save, ArrowRight, AlertCircle } from 'lucide-svelte';
 	import { onMount } from 'svelte';
 
-	// The form components
-	import MCQForm from '../../quizzes/[id]/builder/forms/MCQForm.svelte';
-	import TrueFalseForm from '../../quizzes/[id]/builder/forms/TrueFalseForm.svelte';
-	import OrderingForm from '../../quizzes/[id]/builder/forms/OrderingForm.svelte';
-	import DragDropForm from '../../quizzes/[id]/builder/forms/DragDropForm.svelte';
-	import MatchingForm from '../../quizzes/[id]/builder/forms/MatchingForm.svelte';
-	import FillBlankForm from '../../quizzes/[id]/builder/forms/FillBlankForm.svelte';
-	import ShortAnswerForm from '../../quizzes/[id]/builder/forms/ShortAnswerForm.svelte';
-	import ClozeForm from '../../quizzes/[id]/builder/forms/ClozeForm.svelte';
-
-	let type = $state('mcq');
-	let difficulty = $state('medium');
-	let questionText = $state('');
-	let questionTextAr = $state('');
-	let explanation = $state('');
-	let questionData = $state<any>({});
+	import QuestionForm from '$lib/admin/components/question-forms/QuestionForm.svelte';
+	import { QUESTION_TYPES } from '$lib/admin/questionTypes';
 
 	let categoryId = $state<number | null>(null);
+	let difficulty = $state('medium');
 
-	// Context options
+	let draftQuestion = $state({
+		type: 'mcq',
+		questionText: '',
+		questionTextAr: '',
+		explanation: '',
+		points: 1,
+		questionData: {}
+	});
+
 	let categories = $state<any[]>([]);
 	let loadingData = $state(true);
 	let saving = $state(false);
 	let error = $state('');
-
-	const typeLabels: Record<string, string> = {
-		mcq: 'اختيار من متعدد',
-		true_false: 'صح أو خطأ',
-		ordering: 'ترتيب متسلسل',
-		drag_drop: 'تصنيف (سحب وإفلات)',
-		matching: 'ربط',
-		fill_blank: 'أكمل الفراغ',
-		short_answer: 'إجابة قصيرة',
-		cloze: 'اختيار من القائمة المنزلقة'
-	};
 
 	// Helper to flatten tree into indented list for the select dropdown
 	function flattenTree(treeNodes: any[], prefix = ''): any[] {
@@ -66,13 +50,13 @@
 
 	// Reset question data when type changes
 	$effect(() => {
-		if (type) {
-			questionData = {};
+		if (draftQuestion.type) {
+			draftQuestion.questionData = {};
 		}
 	});
 
 	async function save() {
-		if (!questionText || !questionTextAr || !categoryId || !type) {
+		if (!draftQuestion.questionTextAr || !categoryId || !draftQuestion.type) {
 			error = 'الرجاء تحديد التصنيف وملء نص السؤال المطلوبة';
 			return;
 		}
@@ -86,12 +70,13 @@
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					categoryId,
-					type,
 					difficulty,
-					questionText,
-					questionTextAr,
-					questionData: JSON.stringify(questionData),
-					explanation
+					type: draftQuestion.type,
+					questionText: draftQuestion.questionText,
+					questionTextAr: draftQuestion.questionTextAr,
+					questionData: JSON.stringify(draftQuestion.questionData),
+					explanation: draftQuestion.explanation,
+					points: draftQuestion.points
 				})
 			});
 
@@ -162,98 +147,36 @@
 						</select>
 					</div>
 
-					<div class="mt-6 space-y-2 border-t border-border pt-4">
-						<label class="text-sm font-semibold text-muted-foreground">تلميح أو شرح (اختياري)</label>
-						<textarea
-							bind:value={explanation}
-							rows="4"
-							placeholder="شرح يظهر للطالب بعد الإجابة..."
-							class="w-full resize-none rounded-xl border border-border bg-background p-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary"
-						></textarea>
-					</div>
 				</div>
 			</div>
+			<!-- Render a small saving overlay box if saving -->
+			{#if saving}
+				<div class="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-center text-emerald-400 font-bold">
+					جاري الحفظ...
+				</div>
+			{/if}
 		</div>
 
 		<!-- Main question builder -->
 		<div class="space-y-6 md:col-span-2">
 			<div class="rounded-2xl border border-border bg-card text-card-foreground shadow-sm p-6">
-				<h3 class="mb-4 font-bold text-foreground/80">محتوى السؤال</h3>
-
-				<div class="space-y-4">
-					<div class="grid gap-4 sm:grid-cols-2">
-						<div class="space-y-2">
-							<label class="text-sm font-semibold text-muted-foreground">نص السؤال (بالعربية) *</label>
-							<textarea
-								bind:value={questionTextAr}
-								rows="3"
-								placeholder="ما هي عاصمة الجزائر؟"
-								class="w-full resize-none rounded-xl border border-border bg-background p-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary"
-							></textarea>
-						</div>
-						<div class="space-y-2">
-							<label class="text-sm font-semibold text-muted-foreground">نص السؤال (لغة أجنبية) *</label>
-							<textarea
-								bind:value={questionText}
-								dir="ltr"
-								rows="3"
-								placeholder="What is the capital of Algeria?"
-								class="w-full resize-none rounded-xl border border-border bg-background p-3 text-left text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary"
-							></textarea>
-						</div>
-					</div>
-
-					<div class="space-y-2 border-t border-border pt-4">
-						<label class="text-sm font-semibold text-muted-foreground">نوع السؤال والمحتوى الديناميكي</label
-						>
-						<select
-							bind:value={type}
-							class="w-full rounded-xl border border-emerald-500/30 bg-background p-4 text-emerald-400 outline-none focus:border-primary focus:ring-1 focus:ring-primary"
-						>
-							{#each Object.entries(typeLabels) as [val, label]}
-								<option class="bg-background" value={val}>{label}</option>
-							{/each}
-						</select>
-					</div>
-
-					<!-- Dynamic Form Injection -->
-					<div class="mt-4 rounded-xl border border-border bg-background p-6 shadow-inner">
-						{#if type === 'mcq'}
-							<MCQForm bind:data={questionData} />
-						{:else if type === 'true_false'}
-							<TrueFalseForm bind:data={questionData} />
-						{:else if type === 'ordering'}
-							<OrderingForm bind:data={questionData} />
-						{:else if type === 'drag_drop'}
-							<DragDropForm bind:data={questionData} />
-						{:else if type === 'matching'}
-							<MatchingForm bind:data={questionData} />
-						{:else if type === 'fill_blank'}
-							<FillBlankForm bind:data={questionData} />
-						{:else if type === 'short_answer'}
-							<ShortAnswerForm bind:data={questionData} />
-						{:else if type === 'cloze'}
-							<ClozeForm bind:data={questionData} />
-						{/if}
-					</div>
+				<div class="mb-6 space-y-2 border-b border-border pb-6">
+					<label class="text-lg font-bold text-emerald-400">تحديد نوع السؤال</label>
+					<select
+						bind:value={draftQuestion.type}
+						class="w-full rounded-xl border border-emerald-500/30 bg-background p-4 font-bold text-foreground shadow-sm outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 cursor-pointer"
+					>
+						{#each QUESTION_TYPES as qt}
+							<option class="bg-background font-semibold" value={qt.id}>{qt.name}</option>
+						{/each}
+					</select>
 				</div>
-			</div>
 
-			<div class="flex justify-end pt-4">
-				<button
-					onclick={save}
-					disabled={saving || loadingData}
-					class="flex items-center gap-2 rounded-xl bg-emerald-600 px-8 py-3 font-bold text-foreground shadow-lg transition-all hover:bg-emerald-700 disabled:opacity-50"
-				>
-					{#if saving}
-						<div
-							class="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"
-						></div>
-						جاري الحفظ...
-					{:else}
-						<Save size={18} /> حفظ السؤال في البنك
-					{/if}
-				</button>
+				<QuestionForm 
+					bind:question={draftQuestion} 
+					onSave={save} 
+					onCancel={() => goto('/admin/question-bank')} 
+				/>
 			</div>
 		</div>
 	</div>

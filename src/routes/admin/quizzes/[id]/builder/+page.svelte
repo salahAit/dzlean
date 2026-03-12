@@ -13,7 +13,7 @@
 		Upload
 	} from 'lucide-svelte';
 	import { onMount, tick } from 'svelte';
-	import QuestionForm from './QuestionForm.svelte'; // The dynamic wrapper we will create
+	import QuestionForm from '$lib/admin/components/question-forms/QuestionForm.svelte';
 	import QuestionBankModal from './QuestionBankModal.svelte';
 	import { QUESTION_TYPES, getQuestionType } from '$lib/admin/questionTypes';
 
