@@ -1,0 +1,61 @@
+# JavaScript/SvelteKit & Bun
+node_modules/
+.svelte-kit/
+build/
+dist/
+bun.lock
+bun.lockb
+package-lock.json
+npm-debug.log*
+bun-debug.log*
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Document Generation (Typst & LaTeX)
+*.pdf
+*.aux
+*.log
+*.fls
+*.fdb_latexmk
+*.out
+*.toc
+
+# Databases & Data
+*.db
+*.db-wal
+*.db-shm
+data/backups/
+
+# Media & Assets
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.ico
+*.webp
+*.mp4
+*.mp3
+
+# Cache
+.cache/
+.turbo/
+
+# OS & Editor
+.git/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Misc & Local outputs
+.agent/
+check-errors.txt
+*.bak
+*.tmp
+*.temp

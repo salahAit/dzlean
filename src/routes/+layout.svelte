@@ -15,6 +15,7 @@
 	import DynamicIcon from '$lib/components/DynamicIcon.svelte';
 	import SearchBar from '$lib/components/SearchBar.svelte';
 	import NotificationBell from '$lib/components/NotificationBell.svelte';
+	import PWAInstallPrompt from '$lib/components/PWAInstallPrompt.svelte';
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import 'mobile-drag-drop/default.css';
