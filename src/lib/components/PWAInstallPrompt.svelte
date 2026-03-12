@@ -3,26 +3,80 @@
 	import { Download, X } from 'lucide-svelte';
 	import { slide } from 'svelte/transition';
 
-	// The beforeinstallprompt event is fired by the browser when the app meets PWA installability criteria
+	// ------------------------------------------------------------------------
+	// State for the prompt
 	let deferredPrompt: any = $state(null);
 	let showPrompt = $state(false);
-	
+	// Browser detection flags
+	let isFirefox = $state(false);
+	let isIOS = $state(false);
+	let isUnsupportedBrowser = $state(false);
+
 	onMount(() => {
-		// Listen for the install prompt event from the browser
+		// 1. Detect Browser to show alternative instructions
+		const userAgent = window.navigator.userAgent.toLowerCase();
+		isFirefox = userAgent.includes('firefox');
+		isIOS = /iphone|ipad|ipod/.test(userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+		
+		isUnsupportedBrowser = isFirefox || isIOS;
+
+		// 2. Listen for the native install prompt event (Chrome/Edge/Android)
 		window.addEventListener('beforeinstallprompt', (e) => {
-			// We do NOT use e.preventDefault() here so the native browser button in the address bar STILL shows up!
-			
-			// Stash the event so it can be triggered later.
+			// Do NOT use e.preventDefault() so the native browser button in the address bar STILL shows up!
 			deferredPrompt = e;
 			
-			// Show our custom UI immediately if not dismissed previously
+			// If we got the event, it's definitely supported, override flags
+			isUnsupportedBrowser = false;
+			
 			const isDismissed = localStorage.getItem('pwa_prompt_dismissed') === 'true';
 			if (!isDismissed) {
 				showPrompt = true;
 			}
 		});
 
-		// Listen for successful installation
+		// 3. Fallback for Firefox/Safari: 
+		// Since they don't fire `beforeinstallprompt`, we check if it's already installed (standalone mode)
+		// If not, and it hasn't been dismissed, we show the manual prompt.
+		if (isUnsupportedBrowser) {
+			const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone;
+			const isDismissed = localStorage.getItem('pwa_prompt_dismissed') === 'true';
+			
+			if (!isStandalone && !isDismissed) {
+				// Delay slightly to not interrupt immediate page load
+				setTimeout(() => {
+					showPrompt = true;
+				}, 4000);
+			}
+		}
+
+		// 4. Listen for successful installation
+		window.addEventListener('appinstalled', () => {
+			
+			// If we got the event, it's definitely supported, override flags
+			isUnsupportedBrowser = false;
+			
+			const isDismissed = localStorage.getItem('pwa_prompt_dismissed') === 'true';
+			if (!isDismissed) {
+				showPrompt = true;
+			}
+		});
+
+		// 3. Fallback for Firefox/Safari: 
+		// Since they don't fire `beforeinstallprompt`, we check if it's already installed (standalone mode)
+		// If not, and it hasn't been dismissed, we show the manual prompt.
+		if (isUnsupportedBrowser) {
+			const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone;
+			const isDismissed = localStorage.getItem('pwa_prompt_dismissed') === 'true';
+			
+			if (!isStandalone && !isDismissed) {
+				// Delay slightly to not interrupt immediate page load
+				setTimeout(() => {
+					showPrompt = true;
+				}, 4000);
+			}
+		}
+
+		// 4. Listen for successful installation
 		window.addEventListener('appinstalled', () => {
 			deferredPrompt = null;
 			showPrompt = false;
@@ -38,6 +92,8 @@
 
 	async function installApp() {
 		if (deferredPrompt) {
+			
+			// Native Install (Chrome/Edge)
 			showPrompt = false;
 			deferredPrompt.prompt();
 			
@@ -48,8 +104,12 @@
 			if (outcome === 'accepted') {
 			   localStorage.setItem('pwa_prompt_dismissed', 'true'); 
 			}
+		} else if (isUnsupportedBrowser) {
+			// For Firefox/iOS, we can't trigger it programmatically. 
+			// The UI itself will show instructions instead of an "Install" button doing magic.
+			dismissPrompt(); // Just close it once they click "got it"
 		} else {
-			// Fallback: If no prompt is caught, hide it anyway to prevent confusion
+			// Fallback
 			showPrompt = false;
 		}
 	}
