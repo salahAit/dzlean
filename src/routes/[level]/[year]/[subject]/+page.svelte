@@ -18,7 +18,8 @@
 		Gamepad2,
 		Star,
 		PlusCircle,
-		FilePlus2
+		FilePlus2,
+		Share2
 	} from 'lucide-svelte';
 	import DynamicIcon from '$lib/components/DynamicIcon.svelte';
 	import { toggleBookmark, isBookmarked } from '$lib/stores/bookmarks.svelte';
@@ -152,6 +153,22 @@
 				iframe.contentWindow?.print();
 			}, 500);
 		};
+	}
+
+	async function shareDoc() {
+		if (!selectedDoc) return;
+		const title = selectedDoc.title_ar || selectedDoc.title;
+		const url = window.location.href;
+		const text = `${title} — SujetStore`;
+
+		if (navigator.share) {
+			try {
+				await navigator.share({ title: text, url });
+			} catch {}
+		} else {
+			await navigator.clipboard.writeText(url);
+			alert('تم نسخ الرابط!');
+		}
 	}
 
 	const typeLabels: Record<string, string> = {
@@ -701,6 +718,14 @@
 							><Download size={16} /> <span class="hidden sm:mr-1 sm:inline">تحميل</span></a
 						>
 					{/if}
+
+					<button
+						onclick={shareDoc}
+						class="flex h-9 w-9 items-center justify-center rounded-lg border border-purple-500/30 bg-purple-500/10 text-purple-500 transition-all hover:bg-purple-500 hover:text-white"
+						title="مشاركة"
+					>
+						<Share2 size={18} />
+					</button>
 
 					<button
 						onclick={closeDoc}
