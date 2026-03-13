@@ -1,9 +1,17 @@
 <script lang="ts">
 	import { Plus, Trash2, Edit, X } from 'lucide-svelte';
 	import ConfirmModal from '$lib/components/ConfirmModal.svelte';
+	import Pagination from '$lib/admin/components/Pagination.svelte';
 	import type { ActionData } from './$types';
 
 	let { data, form } = $props<{ data: any; form: ActionData }>();
+
+	// Pagination state
+	let currentPage = $state(1);
+	const pageSize = 10;
+	let paginatedSubjects = $derived(
+		data.subjects.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+	);
 
 	let isCreateModalOpen = $state(false);
 
@@ -80,7 +88,7 @@
 				</tr>
 			</thead>
 			<tbody class="divide-y divide-border">
-				{#each data.subjects as subject}
+				{#each paginatedSubjects as subject}
 					<tr class="transition-colors hover:bg-muted/50">
 						<td class="px-6 py-4 font-medium whitespace-nowrap text-foreground/80" dir="ltr"
 							>{subject.id}</td
@@ -130,6 +138,9 @@
 			</tbody>
 		</table>
 	</div>
+	{#if data.subjects.length > 0}
+		<Pagination totalItems={data.subjects.length} {pageSize} bind:currentPage />
+	{/if}
 </div>
 
 <!-- Create Modal -->

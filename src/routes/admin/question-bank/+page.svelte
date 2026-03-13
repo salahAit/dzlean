@@ -32,12 +32,17 @@
 	import Essay from '$lib/components/questions/Essay.svelte';
 	import { QUESTION_TYPES, getQuestionType } from '$lib/admin/questionTypes'; // Added new import
 	import QuestionPreviewModal from '$lib/admin/components/QuestionPreviewModal.svelte';
+	import Pagination from '$lib/admin/components/Pagination.svelte';
 
 	let questions = $state<any[]>([]);
 	let loading = $state(true);
 	let searchQuery = $state('');
 	let selectedType = $state('all');
 	let selectedDifficulty = $state('all');
+
+	// Pagination state
+	let currentPage = $state(1);
+	const pageSize = 10;
 
 	// Preview state
 	let previewQuestion = $state<any>(null);
@@ -145,10 +150,34 @@
 				(q.questionText || '').includes(searchQuery) ||
 				(q.questionTextAr || '').includes(searchQuery);
 			const matchesType = selectedType === 'all' || q.type === selectedType;
-			const matchesDifficulty = selectedDifficulty === 'all' || q.difficulty === selectedDifficulty;
+			const matchesDifficulty = selectedDifficulty === 'all' || (q.difficulty || 'medium') === selectedDifficulty;
 			return matchesSearch && matchesType && matchesDifficulty;
 		})
 	);
+
+	let stats = $derived.by(() => {
+		let easy = 0;
+		let medium = 0;
+		let hard = 0;
+		for (const q of filteredQuestions) {
+			const diff = q.difficulty || 'medium';
+			if (diff === 'easy') easy++;
+			else if (diff === 'hard') hard++;
+			else medium++;
+		}
+		return { total: filteredQuestions.length, easy, medium, hard };
+	});
+
+	let paginatedQuestions = $derived(
+		filteredQuestions.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+	);
+
+	// Reset pagination on search or filter
+	$effect(() => {
+		if (searchQuery !== undefined || selectedType !== undefined || selectedDifficulty !== undefined) {
+			currentPage = 1;
+		}
+	});
 </script>
 
 <div class="space-y-6">
@@ -184,15 +213,52 @@
 			/>
 			<a
 				href="/admin/question-bank/new"
-				class="flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-bold text-foreground shadow-lg shadow-emerald-600/20 transition-all hover:bg-emerald-700"
+				class="flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-bold text-foreground shadow-lg shadow-emerald-600/20 transition-all hover:bg-emerald-700 hover:text-white"
 			>
 				<Plus size={18} /> إضافة سؤال جديد
 			</a>
 		</div>
 	</div>
 
+	<!-- Stats Dashboard -->
+	<div class="grid grid-cols-2 gap-4 md:grid-cols-4">
+		<div class="flex flex-col gap-2 rounded-2xl border border-border bg-card p-5 shadow-sm">
+			<div class="flex items-center gap-2 text-emerald-500">
+				<Database size={20} />
+				<span class="font-bold text-sm">إجمالي النتائج</span>
+			</div>
+			<p class="text-3xl font-black text-foreground mt-1">
+				{stats.total} 
+				{#if questions.length > 0 && stats.total !== questions.length}
+					<span class="text-sm font-normal text-muted-foreground mr-1 truncate">من أصل {questions.length}</span>
+				{/if}
+			</p>
+		</div>
+		<div class="flex flex-col gap-2 rounded-2xl border border-border bg-card p-5 shadow-sm">
+			<div class="flex items-center gap-2 text-blue-500">
+				<div class="h-3 w-3 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]"></div>
+				<span class="font-bold text-sm">أسئلة سهلة</span>
+			</div>
+			<p class="text-3xl font-black text-foreground mt-1">{stats.easy}</p>
+		</div>
+		<div class="flex flex-col gap-2 rounded-2xl border border-border bg-card p-5 shadow-sm">
+			<div class="flex items-center gap-2 text-amber-500">
+				<div class="h-3 w-3 rounded-full bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.5)]"></div>
+				<span class="font-bold text-sm">أسئلة متوسطة</span>
+			</div>
+			<p class="text-3xl font-black text-foreground mt-1">{stats.medium}</p>
+		</div>
+		<div class="flex flex-col gap-2 rounded-2xl border border-border bg-card p-5 shadow-sm">
+			<div class="flex items-center gap-2 text-red-500">
+				<div class="h-3 w-3 rounded-full bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]"></div>
+				<span class="font-bold text-sm">أسئلة صعبة</span>
+			</div>
+			<p class="text-3xl font-black text-foreground mt-1">{stats.hard}</p>
+		</div>
+	</div>
+
 	<!-- Search & Filters -->
-	<div class="mb-6 flex flex-col gap-4 md:flex-row">
+	<div class="flex flex-col gap-4 md:flex-row">
 		<div class="relative flex-1">
 			<Search class="absolute top-1/2 right-4 -translate-y-1/2 text-foreground/40" size={18} />
 			<input
@@ -246,7 +312,7 @@
 					</tr>
 				</thead>
 				<tbody class="divide-y divide-white/5">
-					{#each filteredQuestions as q}
+					{#each paginatedQuestions as q}
 						{@const qType = getQuestionType(q.type)}
 						<tr class="transition-colors hover:bg-muted/50">
 							<td class="max-w-[12rem] px-4 py-4 font-mono text-xs text-emerald-400">
@@ -312,6 +378,9 @@
 				</tbody>
 			</table>
 		</div>
+		{#if filteredQuestions.length > 0}
+			<Pagination totalItems={filteredQuestions.length} {pageSize} bind:currentPage />
+		{/if}
 	{/if}
 </div>
 

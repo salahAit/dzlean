@@ -1,11 +1,16 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import { Brain, Plus, Edit, Trash2, Eye, EyeOff, Lock, CheckCircle, Search, Copy, SaveAll, Hash, FolderTree } from 'lucide-svelte';
+	import Pagination from '$lib/admin/components/Pagination.svelte';
 
 	let quizzes = $state<any[]>([]);
 	let stats = $state({ totalQuizzes: 0, totalQuestions: 0, totalCategories: 0 });
 	let loading = $state(true);
 	let searchQuery = $state('');
+
+	// Pagination state
+	let currentPage = $state(1);
+	const pageSize = 10;
 
 	onMount(async () => {
 		await Promise.all([loadQuizzes(), loadStats()]);
@@ -73,6 +78,17 @@
 			(q) => (q.title || '').includes(searchQuery) || (q.titleAr || '').includes(searchQuery)
 		)
 	);
+
+	let paginatedQuizzes = $derived(
+		filteredQuizzes.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+	);
+
+	// Reset pagination on search
+	$effect(() => {
+		if (searchQuery !== undefined) {
+			currentPage = 1;
+		}
+	});
 </script>
 
 <div class="space-y-6">
@@ -145,7 +161,7 @@
 					</tr>
 				</thead>
 				<tbody class="divide-y divide-white/5">
-					{#each filteredQuizzes as quiz}
+					{#each paginatedQuizzes as quiz}
 						<tr class="transition-colors hover:bg-muted/50">
 							<td class="p-4">
 								<p class="font-bold">{quiz.titleAr || quiz.title}</p>
@@ -231,5 +247,8 @@
 				</tbody>
 			</table>
 		</div>
+		{#if filteredQuizzes.length > 0}
+			<Pagination totalItems={filteredQuizzes.length} {pageSize} bind:currentPage />
+		{/if}
 	{/if}
 </div>
