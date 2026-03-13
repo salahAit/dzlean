@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Search, X, FileText, FileEdit, BookOpen, Loader2 } from 'lucide-svelte';
+	import { Search, X, FileText, FileEdit, BookOpen, Loader2, Brain } from 'lucide-svelte';
 	import { goto } from '$app/navigation';
 
 	let isOpen = $state(false);
@@ -16,7 +16,8 @@
 		lesson: 'درس',
 		summary: 'ملخص',
 		exercise: 'تمرين',
-		solution: 'حل'
+		solution: 'حل',
+		quiz: 'تمرين تفاعلي'
 	};
 
 	function open() {
@@ -73,7 +74,11 @@
 
 	function navigateTo(doc: any) {
 		close();
-		goto(`/${doc.level_slug}/${doc.year_slug}/${doc.subject_slug}`);
+		if (doc.type === 'quiz') {
+			goto(`/quizzes/${doc.slug}`);
+		} else {
+			goto(`/${doc.level_slug}/${doc.year_slug}/${doc.subject_slug}`);
+		}
 	}
 
 	// Global keyboard shortcut Ctrl+K
@@ -124,7 +129,7 @@
 					oninput={onInput}
 					onkeydown={onKeydown}
 					type="text"
-					placeholder="ابحث عن فروض، اختبارات، دروس..."
+					placeholder="ابحث عن فروض، اختبارات، تمارين تفاعلية..."
 					class="text-foreground placeholder:text-muted-foreground w-full bg-transparent text-base outline-none"
 				/>
 				{#if isLoading}
@@ -171,6 +176,8 @@
 									<FileText size={16} />
 								{:else if doc.type === 'test'}
 									<FileEdit size={16} />
+								{:else if doc.type === 'quiz'}
+									<Brain size={16} />
 								{:else}
 									<BookOpen size={16} />
 								{/if}

@@ -41,17 +41,48 @@ const badgeCount = usersDb.prepare('SELECT COUNT(*) as c FROM badge_definitions'
 if (badgeCount.c === 0) {
 	const insert = usersDb.prepare('INSERT INTO badge_definitions (slug, name, name_ar, description, icon, color, condition, points) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
 	const badges = [
-		['first_quiz', 'First Quiz', 'التمرين الأول', 'أكمل تمرينك الأول', '🎯', '#3b82f6', '{"type":"quiz_count","threshold":1}', 10],
-		['five_quizzes', 'Quiz Explorer', 'مستكشف التمارين', 'أكمل 5 تمارين', '📚', '#8b5cf6', '{"type":"quiz_count","threshold":5}', 25],
-		['ten_quizzes', 'Quiz Master', 'خبير التمارين', 'أكمل 10 تمارين', '🏆', '#f59e0b', '{"type":"quiz_count","threshold":10}', 50],
-		['perfect_score', 'Perfect Score', 'نتيجة مثالية', 'احصل على 100% في تمرين', '⭐', '#10b981', '{"type":"perfect_score","threshold":100}', 30],
-		['speed_demon', 'Speed Demon', 'سريع البرق', 'أكمل تمرين في أقل من دقيقة', '⚡', '#ef4444', '{"type":"time_under","threshold":60}', 20],
-		['streak_3', 'Hot Streak', 'سلسلة ناجحة', 'احصل على 80%+ في 3 تمارين متتالية', '🔥', '#f97316', '{"type":"streak","threshold":3}', 40],
-		['all_types', 'Versatile', 'متعدد المهارات', 'جرّب 5 أنواع مختلفة من الأسئلة', '🎪', '#06b6d4', '{"type":"question_types","threshold":5}', 35],
-		['hundred_points', 'Centurion', 'المائة نقطة', 'اجمع 100 نقطة', '💯', '#ec4899', '{"type":"total_points","threshold":100}', 20],
+		['first_quiz', 'First Quiz', 'التمرين الأول', 'أكمل تمرينك الأول', 'Target', '#3b82f6', '{"type":"quiz_count","threshold":1}', 10],
+		['five_quizzes', 'Quiz Explorer', 'مستكشف التمارين', 'أكمل 5 تمارين', 'BookOpen', '#8b5cf6', '{"type":"quiz_count","threshold":5}', 25],
+		['ten_quizzes', 'Quiz Master', 'خبير التمارين', 'أكمل 10 تمارين', 'Trophy', '#f59e0b', '{"type":"quiz_count","threshold":10}', 50],
+		['perfect_score', 'Perfect Score', 'نتيجة مثالية', 'احصل على 100% في تمرين', 'Star', '#10b981', '{"type":"perfect_score","threshold":100}', 30],
+		['speed_demon', 'Speed Demon', 'سريع البرق', 'أكمل تمرين في أقل من دقيقة', 'Zap', '#ef4444', '{"type":"time_under","threshold":60}', 20],
+		['streak_3', 'Hot Streak', 'سلسلة ناجحة', 'احصل على 80%+ في 3 تمارين متتالية', 'Flame', '#f97316', '{"type":"streak","threshold":3}', 40],
+		['all_types', 'Versatile', 'متعدد المهارات', 'جرّب 5 أنواع مختلفة من الأسئلة', 'LayoutGrid', '#06b6d4', '{"type":"question_types","threshold":5}', 35],
+		['hundred_points', 'Centurion', 'المائة نقطة', 'اجمع 100 نقطة', 'Award', '#ec4899', '{"type":"total_points","threshold":100}', 20],
 	];
 	for (const b of badges) {
 		insert.run(...b);
+	}
+}
+
+// Migration: Update existing emojis to Lucide icons if not already done
+const emojiToLucide: Record<string, string> = {
+	'🎯': 'Target',
+	'📚': 'BookOpen',
+	'🏆': 'Trophy',
+	'⭐': 'Star',
+	'⚡': 'Zap',
+	'🔥': 'Flame',
+	'🎪': 'LayoutGrid',
+	'💯': 'Award'
+};
+
+for (const [emoji, lucide] of Object.entries(emojiToLucide)) {
+	usersDb.prepare('UPDATE badge_definitions SET icon = ? WHERE icon = ?').run(lucide, emoji);
+}
+
+// Seed example user data if empty
+const pointsCount = usersDb.prepare('SELECT COUNT(*) as c FROM user_points').get() as any;
+if (pointsCount.c === 0) {
+	const fp = 'example-user-fp';
+	usersDb.prepare('INSERT INTO user_points (fingerprint, points, reason, earned_at) VALUES (?, ?, ?, ?)').run(
+		fp, 150, 'quiz_complete', new Date().toISOString()
+	);
+	const firstBadge = usersDb.prepare('SELECT id FROM badge_definitions WHERE slug = ?').get('first_quiz') as any;
+	if (firstBadge) {
+		usersDb.prepare('INSERT INTO user_badges (fingerprint, badge_id, earned_at) VALUES (?, ?, ?)').run(
+			fp, firstBadge.id, new Date().toISOString()
+		);
 	}
 }
 

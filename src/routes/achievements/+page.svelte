@@ -1,6 +1,10 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { Trophy, Star, Zap, Target, Crown, Medal, TrendingUp } from 'lucide-svelte';
+	import { Trophy, Star, Zap, Target, Crown, Medal, TrendingUp, BookOpen, Flame, LayoutGrid, Award, CheckCircle, XCircle } from 'lucide-svelte';
+
+	const icons: Record<string, any> = {
+		Trophy, Star, Zap, Target, Crown, Medal, TrendingUp, BookOpen, Flame, LayoutGrid, Award
+	};
 
 	let data = $state<any>(null);
 	let loading = $state(true);
@@ -108,19 +112,50 @@
 				<div class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
 					{#each data.badges as badge}
 						<div
-							class="bg-card relative overflow-hidden rounded-xl border border-black/5 p-4 text-center shadow-sm transition-all dark:border-white/10 {badge.earned
-								? 'border-amber-500/30 shadow-lg shadow-amber-500/10'
-								: 'opacity-60 grayscale'}"
+							class="bg-card group relative overflow-hidden rounded-2xl border border-black/5 p-5 text-center shadow-sm transition-all hover:-translate-y-1 dark:border-white/10 {badge.earned
+								? 'border-amber-500/30 bg-gradient-to-b from-white to-amber-50/30 shadow-xl shadow-amber-500/5 dark:from-white/5 dark:to-amber-500/5'
+								: 'opacity-50 grayscale hover:grayscale-0 hover:opacity-100'}"
 						>
+							<!-- Background Glow -->
 							{#if badge.earned}
-								<div class="absolute top-2 right-2">
-									<Star size={14} class="text-amber-500" fill="currentColor" />
+								<div 
+									class="absolute -top-12 -right-12 h-24 w-24 rounded-full blur-3xl opacity-20 transition-opacity group-hover:opacity-40"
+									style="background-color: {badge.color}"
+								></div>
+							{/if}
+
+							{#if badge.earned}
+								<div class="absolute top-3 right-3">
+									<Star size={14} class="text-amber-500 animate-pulse" fill="currentColor" />
 								</div>
 							{/if}
-							<div class="mb-2 text-4xl">{badge.icon}</div>
-							<h3 class="text-sm font-bold">{badge.name_ar}</h3>
-							<p class="text-muted-foreground mt-1 text-[10px]">{badge.description}</p>
-							<div class="mt-2 text-xs font-bold" style="color: {badge.color}">
+
+							<div class="mb-4 flex justify-center">
+								{#if icons[badge.icon]}
+									{@const Icon = icons[badge.icon]}
+									<div 
+										class="flex h-14 w-14 items-center justify-center rounded-2xl transition-transform group-hover:scale-110"
+										style="background-color: {badge.earned ? `${badge.color}15` : 'rgba(0,0,0,0.05)'}"
+									>
+										<Icon 
+											size={30} 
+											style="color: {badge.earned ? badge.color : 'currentColor'}" 
+											class={badge.earned ? 'drop-shadow-[0_0_8px_rgba(0,0,0,0.1)]' : ''}
+										/>
+									</div>
+								{:else}
+									<div class="text-4xl">{badge.icon}</div>
+								{/if}
+							</div>
+							
+							<h3 class="text-sm font-bold leading-tight">{badge.name_ar}</h3>
+							<p class="text-muted-foreground mt-1.5 text-[10px] leading-relaxed line-clamp-2">{badge.description}</p>
+							
+							<div 
+								class="mt-3 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold"
+								style="color: {badge.color}; background-color: {badge.color}15"
+							>
+								<Zap size={10} fill="currentColor" />
 								+{badge.points} نقطة
 							</div>
 						</div>
@@ -145,16 +180,16 @@
 						<tbody>
 							{#each data.leaderboard as player, i}
 								<tr class="hover:bg-muted/50 border-b transition-colors">
-									<td
-										class="p-3 font-bold {i === 0
-											? 'text-amber-500'
-											: i === 1
-												? 'text-gray-400'
-												: i === 2
-													? 'text-amber-700'
-													: 'text-muted-foreground'}"
-									>
-										{i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}
+									<td class="p-3">
+										{#if i === 0}
+											<Trophy size={18} class="mx-auto text-amber-500" />
+										{:else if i === 1}
+											<Medal size={18} class="mx-auto text-gray-400" />
+										{:else if i === 2}
+											<Medal size={18} class="mx-auto text-amber-700" />
+										{:else}
+											<span class="text-muted-foreground font-bold">{i + 1}</span>
+										{/if}
 									</td>
 									<td class="p-3 font-semibold">
 										{player.fingerprint?.substring(0, 8)}...
@@ -183,14 +218,16 @@
 							class="bg-card flex items-center justify-between rounded-lg border border-black/5 p-3 shadow-sm dark:border-white/10"
 						>
 							<div>
-								<span class="text-sm font-bold">
-									{entry.reason === 'quiz_complete'
-										? '✅ إكمال تمرين'
-										: entry.reason === 'perfect_score'
-											? '⭐ نتيجة مثالية'
-											: entry.reason === 'badge_earned'
-												? '🏆 شارة جديدة'
-												: entry.reason}
+								<span class="flex items-center gap-2 text-sm font-bold">
+									{#if entry.reason === 'quiz_complete'}
+										<CheckCircle size={14} class="text-emerald-500" /> إكمال تمرين
+									{:else if entry.reason === 'perfect_score'}
+										<Star size={14} class="text-amber-500" /> نتيجة مثالية
+									{:else if entry.reason === 'badge_earned'}
+										<Trophy size={14} class="text-amber-500" /> شارة جديدة
+									{:else}
+										{entry.reason}
+									{/if}
 								</span>
 								<span class="text-muted-foreground mr-2 text-xs">
 									{new Date(entry.earned_at).toLocaleDateString('ar-DZ')}
