@@ -6,8 +6,8 @@
 
 	let questionId = $derived($page.params.id);
 
-	import QuestionForm from '$lib/admin/components/question-forms/QuestionForm.svelte';
-	import { QUESTION_TYPES } from '$lib/admin/questionTypes';
+	import { QuestionForm } from '$lib/modules/QuizBuilder';
+	import { QUESTION_TYPES } from '$lib/modules/QuizBuilder';
 
 	let categoryId = $state<number | null>(null);
 	let difficulty = $state('medium');
@@ -152,8 +152,9 @@
 					<h3 class="mb-4 font-bold text-foreground/80">تصنيف السؤال</h3>
 					<div class="space-y-4">
 						<div class="space-y-2">
-							<label class="text-sm font-semibold text-muted-foreground">تحديد التصنيف (Category) *</label>
+							<label for="categoryId" class="text-sm font-semibold text-muted-foreground">تحديد التصنيف (Category) *</label>
 							<select
+								id="categoryId"
 								bind:value={categoryId}
 								class="w-full rounded-xl border border-border bg-background p-3 font-mono text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary"
 							>
@@ -169,8 +170,9 @@
 						</div>
 
 						<div class="space-y-2">
-							<label class="text-sm font-semibold text-muted-foreground">مستوى الصعوبة</label>
+							<label for="difficulty" class="text-sm font-semibold text-muted-foreground">مستوى الصعوبة</label>
 							<select
+								id="difficulty"
 								bind:value={difficulty}
 								class="w-full rounded-xl border border-border bg-background p-3 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary"
 							>
@@ -193,8 +195,9 @@
 			<div class="space-y-6 md:col-span-2">
 				<div class="rounded-2xl border border-border bg-card text-card-foreground shadow-sm p-6">
 					<div class="mb-6 space-y-2 border-b border-border pb-6">
-						<label class="text-lg font-bold text-emerald-400">تحديد نوع السؤال</label>
+						<label for="questionType" class="text-lg font-bold text-emerald-400">تحديد نوع السؤال</label>
 						<select
+							id="questionType"
 							bind:value={draftQuestion.type}
 							class="w-full rounded-xl border border-emerald-500/30 bg-background p-4 font-bold text-foreground shadow-sm outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 cursor-pointer"
 						>

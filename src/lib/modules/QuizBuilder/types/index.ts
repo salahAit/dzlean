@@ -43,17 +43,22 @@ export function getQuestionType(id: string) {
     };
 }
 
+// Upgraded generic definitions with Universal Image Support
 export function getDefaultDataForType(type: string) {
     switch (type) {
         case 'mcq':
+            // options now an array of objects to support images: { text: string, imageUrl?: string }
             return { options: [], correctIndices: [] };
         case 'true_false':
             return { correctAnswer: true };
         case 'ordering':
+            // items: { id: string, text: string, imageUrl?: string }
             return { items: [] };
         case 'drag_drop':
+            // items: { text: string, imageUrl?: string, category: string }
             return { categories: [], items: [] };
         case 'matching':
+            // pairs: { left: { text: string, imageUrl?: string }, right: { text: string, imageUrl?: string } }
             return { pairs: [] };
         case 'fill_blank':
             return { acceptedAnswers: [] };
@@ -68,8 +73,10 @@ export function getDefaultDataForType(type: string) {
         case 'hotspot':
             return { imageUrl: '', zones: [], correctZone: 0 };
         case 'drag_to_image':
+            // labels: { id: string, text: string, x: number, y: number, imageUrl?: string }
             return { imageUrl: '', labels: [] };
         case 'matrix':
+            // statements: { text: string, imageUrl?: string }
             return { statements: [], columns: ['صحيح', 'خطأ'], correctAnswers: [] };
         case 'essay':
             return { minWords: 0, maxWords: 0, keywords: [] };

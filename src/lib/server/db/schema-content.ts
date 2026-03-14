@@ -247,6 +247,8 @@ export const questions = sqliteTable('questions', {
 
 	questionText: text('question_text').notNull(),
 	questionTextAr: text('question_text_ar'),
+	imageUrl: text('image_url'),
+	imageCaption: text('image_caption'),
 	questionData: customType<{ data: any; driverData: string }>({
 		dataType() {
 			return 'text'; // SQLite stores JSON in text columns

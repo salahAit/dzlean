@@ -142,8 +142,9 @@
 		<!-- Settings Grid -->
 		<div class="grid gap-6 sm:grid-cols-3">
 			<div class="space-y-2 text-right">
-				<label class="text-sm font-semibold text-foreground/80">مستوى الصعوبة</label>
+				<label for="difficulty" class="text-sm font-semibold text-foreground/80">مستوى الصعوبة</label>
 				<select
+					id="difficulty"
 					bind:value={difficulty}
 					class="w-full rounded-xl border border-border bg-background p-3 text-right text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary"
 				>
@@ -153,8 +154,9 @@
 				</select>
 			</div>
 			<div class="space-y-2 text-right">
-				<label class="text-sm font-semibold text-foreground/80">الوقت المخصص (بالثواني)</label>
+				<label for="timeLimit" class="text-sm font-semibold text-foreground/80">الوقت المخصص (بالثواني)</label>
 				<input
+					id="timeLimit"
 					type="number"
 					bind:value={timeLimit}
 					min="0"
@@ -164,8 +166,9 @@
 				<p class="text-xs text-foreground/40">استخدم 0 لوقت غير محدود</p>
 			</div>
 			<div class="space-y-2 text-right">
-				<label class="text-sm font-semibold text-foreground/80">نسبة النجاح (%)</label>
+				<label for="passingScore" class="text-sm font-semibold text-foreground/80">نسبة النجاح (%)</label>
 				<input
+					id="passingScore"
 					type="number"
 					bind:value={passingScore}
 					min="0"

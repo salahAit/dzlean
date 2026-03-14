@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount, createEventDispatcher } from 'svelte';
 	import { Search, Plus, Check, X, Database, Filter } from 'lucide-svelte';
-	import { getQuestionType } from '$lib/admin/questionTypes';
+	import { getQuestionType } from '$lib/modules/QuizBuilder';
 
 	let {
 		isOpen = $bindable(false),

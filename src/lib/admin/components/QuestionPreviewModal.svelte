@@ -1,20 +1,20 @@
 <script lang="ts">
 	import { X, CheckCircle, XCircle, Eye } from 'lucide-svelte';
-	import MCQ from '$lib/components/questions/MCQ.svelte';
-	import TrueFalse from '$lib/components/questions/TrueFalse.svelte';
-	import Ordering from '$lib/components/questions/Ordering.svelte';
-	import DragDrop from '$lib/components/questions/DragDrop.svelte';
-	import Matching from '$lib/components/questions/Matching.svelte';
-	import FillBlank from '$lib/components/questions/FillBlank.svelte';
-	import ShortAnswer from '$lib/components/questions/ShortAnswer.svelte';
-	import Cloze from '$lib/components/questions/Cloze.svelte';
-	import Calculated from '$lib/components/questions/Calculated.svelte';
-	import SentenceReorder from '$lib/components/questions/SentenceReorder.svelte';
-	import Hotspot from '$lib/components/questions/Hotspot.svelte';
-	import DragToImage from '$lib/components/questions/DragToImage.svelte';
-	import Matrix from '$lib/components/questions/Matrix.svelte';
-	import Essay from '$lib/components/questions/Essay.svelte';
-	import { getQuestionType } from '$lib/admin/questionTypes';
+	import MCQ from '$lib/modules/QuizBuilder/components/player/questions/MCQ.svelte';
+	import TrueFalse from '$lib/modules/QuizBuilder/components/player/questions/TrueFalse.svelte';
+	import Ordering from '$lib/modules/QuizBuilder/components/player/questions/Ordering.svelte';
+	import DragDrop from '$lib/modules/QuizBuilder/components/player/questions/DragDrop.svelte';
+	import Matching from '$lib/modules/QuizBuilder/components/player/questions/Matching.svelte';
+	import FillBlank from '$lib/modules/QuizBuilder/components/player/questions/FillBlank.svelte';
+	import ShortAnswer from '$lib/modules/QuizBuilder/components/player/questions/ShortAnswer.svelte';
+	import Cloze from '$lib/modules/QuizBuilder/components/player/questions/Cloze.svelte';
+	import Calculated from '$lib/modules/QuizBuilder/components/player/questions/Calculated.svelte';
+	import SentenceReorder from '$lib/modules/QuizBuilder/components/player/questions/SentenceReorder.svelte';
+	import Hotspot from '$lib/modules/QuizBuilder/components/player/questions/Hotspot.svelte';
+	import DragToImage from '$lib/modules/QuizBuilder/components/player/questions/DragToImage.svelte';
+	import Matrix from '$lib/modules/QuizBuilder/components/player/questions/Matrix.svelte';
+	import Essay from '$lib/modules/QuizBuilder/components/player/questions/Essay.svelte';
+	import { getQuestionType } from '$lib/modules/QuizBuilder';
 
 	let { isOpen = $bindable(false), question } = $props<{
 		isOpen: boolean;

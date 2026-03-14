@@ -3,8 +3,8 @@
 	import { Save, ArrowRight, AlertCircle } from 'lucide-svelte';
 	import { onMount } from 'svelte';
 
-	import QuestionForm from '$lib/admin/components/question-forms/QuestionForm.svelte';
-	import { QUESTION_TYPES, getDefaultDataForType } from '$lib/admin/questionTypes';
+	import { QuestionForm } from '$lib/modules/QuizBuilder';
+	import { QUESTION_TYPES, getDefaultDataForType } from '$lib/modules/QuizBuilder';
 
 	let categoryId = $state<number | null>(null);
 	let difficulty = $state('medium');

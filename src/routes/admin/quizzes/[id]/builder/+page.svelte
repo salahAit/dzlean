@@ -7,17 +7,15 @@
 		GripVertical,
 		Trash2,
 		Edit2,
-		AlertCircle,
 		Save,
 		Brain,
 		Upload,
 		Eye
 	} from 'lucide-svelte';
 	import { onMount, tick } from 'svelte';
-	import QuestionForm from '$lib/admin/components/question-forms/QuestionForm.svelte';
+	import { QuestionForm, QUESTION_TYPES, getQuestionType, getDefaultDataForType } from '$lib/modules/QuizBuilder';
 	import QuestionBankModal from './QuestionBankModal.svelte';
 	import QuestionPreviewModal from '$lib/admin/components/QuestionPreviewModal.svelte';
-	import { QUESTION_TYPES, getQuestionType, getDefaultDataForType } from '$lib/admin/questionTypes';
 
 	let quizId = $derived(page.params.id);
 	let quiz = $state<any>(null);
