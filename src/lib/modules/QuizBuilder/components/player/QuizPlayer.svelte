@@ -317,7 +317,7 @@
 	function submit() {
 		clearInterval(timerInterval);
 		const details = questions.map((q: any) => {
-			const answer = answers[q.id];
+			const answer = answers[q.id] || null;
 			const correct = checkAnswer(q, answer);
 			return {
 				question: q,

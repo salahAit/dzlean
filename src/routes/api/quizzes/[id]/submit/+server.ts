@@ -49,9 +49,9 @@ export async function POST({ request, cookies }) {
             const answerValues = details.map((d) => ({
                 attemptId: attemptResult.id,
                 questionId: d.question.id,
-                answer: JSON.stringify(d.answer),
+                answer: JSON.stringify(d.answer ?? {}),
                 isCorrect: d.correct ? 1 : 0,
-                pointsEarned: d.points
+                pointsEarned: d.points || 0
             }));
 
             usersDatabase.insert(userSchema.attemptAnswers).values(answerValues).run();
